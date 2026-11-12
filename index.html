@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c1a22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Endless Seasons">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+</head>
+<body>
+<title>Endless Seasons Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one column, bottom tabs, sheets rise over the page. Dark-first: night-deck navy with lantern amber. */
+:root{
+  --bg:#0c1a22; --bg2:#10222c; --card:#152b35; --line:#26454f; --ink:#eef2ee; --mute:#9db3b8;
+  --amber:#f0b45a; --amber-ink:#2a1a02; --rec:#e5604d; --ok:#7cc6a4;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){--bg:#f4efe4;--bg2:#ebe4d3;--card:#fffaf0;--line:#d7ccb4;--ink:#1b2a30;--mute:#5d6e72;--amber:#b9701a;--amber-ink:#fff;--rec:#c8402d;--ok:#2f7d5b;color-scheme:light}
+}
+:root[data-theme="light"]{--bg:#f4efe4;--bg2:#ebe4d3;--card:#fffaf0;--line:#d7ccb4;--ink:#1b2a30;--mute:#5d6e72;--amber:#b9701a;--amber-ink:#fff;--rec:#c8402d;--ok:#2f7d5b;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-tap-highlight-color:transparent}
+#app{max-width:720px;margin:0 auto;padding-block:14px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:1.9rem;line-height:1.15}
+h2{font-size:1.25rem;margin:22px 0 10px}
+p{margin:0 0 10px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.mute{color:var(--mute)} .small{font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;min-width:0}
+.stat b{display:block;font:600 1.25rem var(--serif)} .stat span{font-size:.62rem;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:44px;cursor:pointer}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.5;cursor:default}
+button.primary{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:600}
+button.danger{color:var(--rec)}
+button.ghost{background:transparent}
+button.sm{min-height:36px;padding:6px 12px;font-size:.88rem}
+input,select,textarea{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-height:44px}
+textarea{min-height:120px;resize:vertical;line-height:1.55}
+textarea.serif{font-family:var(--serif);font-size:1.05rem}
+label{display:block;font-size:.8rem;color:var(--mute);margin:12px 0 4px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--bg2);border-radius:999px;padding:5px 13px;min-height:34px;font-size:.84rem;white-space:nowrap}
+.chip.on{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:600}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:.74rem;color:var(--mute);margin-right:4px}
+.tag.gold{color:var(--amber);border-color:var(--amber)}
+.ring{width:min(280px,78vw);height:auto}
+.ringwrap{display:flex;flex-direction:column;align-items:center;margin:8px 0 0}
+.ring path{fill:none;stroke-width:16;cursor:pointer;transition:stroke-width .15s}
+.ring path.sel{stroke-width:22}
+.ringc{font-family:var(--serif);fill:var(--ink);text-anchor:middle}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:20}
+nav .inner{display:flex;width:100%;max-width:720px}
+nav button{flex:1;background:none;border:0;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:var(--mute);padding:8px 2px;min-height:58px}
+nav button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--amber)}
+.qcard{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:18px;margin:8px 0 12px}
+.q{font:1.28rem/1.4 var(--serif);margin:6px 0 10px}
+.deep{border-left:3px solid var(--amber);padding:2px 0 2px 12px;margin:10px 0;font-family:var(--serif);font-style:italic}
+.recbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:10px 0;position:sticky;bottom:calc(58px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);z-index:5}
+.timer{font:600 1.3rem var(--serif);min-width:64px;font-variant-numeric:tabular-nums}
+.mic{--lvl:0;width:88px;height:88px;border-radius:50%;background:var(--amber);border:0;color:var(--amber-ink);display:grid;place-items:center;padding:0;box-shadow:0 0 0 calc(4px + var(--lvl)*18px) color-mix(in srgb,var(--amber) 28%,transparent);transition:box-shadow .08s}
+.mic svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mic.live{background:var(--rec);color:#fff;box-shadow:0 0 0 calc(4px + var(--lvl)*18px) color-mix(in srgb,var(--rec) 30%,transparent)}
+.recbar .side{min-width:64px;text-align:right}
+.note{background:color-mix(in srgb,var(--amber) 12%,transparent);border:1px solid color-mix(in srgb,var(--amber) 40%,transparent);border-radius:12px;padding:9px 12px;font-size:.85rem;margin:8px 0}
+audio{width:100%;height:40px;margin:6px 0}
+.item{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin:8px 0}
+.item h3{font-size:1.05rem;margin-bottom:2px}
+.lens{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left}
+.lens b{font-family:var(--serif);display:block;margin-bottom:2px}
+.empty{text-align:center;color:var(--mute);padding:26px 10px}
+.bubble{border-radius:14px;padding:10px 13px;margin:8px 0;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.a{background:var(--card);border:1px solid var(--line);font-family:var(--serif);font-size:1.05rem}
+.bubble.u{background:color-mix(in srgb,var(--amber) 16%,var(--bg));margin-left:auto}
+.issue{border-left:3px solid var(--amber);padding:2px 0 2px 12px;margin:12px 0}
+#back{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30}
+#sheet{position:fixed;left:0;right:0;bottom:0;max-height:94dvh;z-index:31;background:var(--bg);border-radius:20px 20px 0 0;border:1px solid var(--line);max-width:720px;margin:0 auto;display:flex;flex-direction:column;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+#sheet header{display:flex;align-items:center;justify-content:space-between;padding:14px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+#sheet header h2{margin:0}
+#sheetBody{overflow:auto;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));-webkit-overflow-scrolling:touch}
+#dlg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:20px}
+#dlg .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:420px;width:100%}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:50;font-size:.9rem;max-width:88vw;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--rec);display:inline-block;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.25}}
+body:not(.has-ai) .ai{display:none!important}
+body:not(.has-tts) .tts{display:none!important}
+body.in-ai .local-only{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+
+<section id="v-home" class="view">
+  <div class="eyebrow">A book in seasons</div>
+  <h1 id="hTitle"></h1>
+  <p id="hSub" class="mute" style="font-family:var(--serif);font-style:italic;font-size:1.15rem;margin-top:2px"></p>
+  <div class="ringwrap">
+    <svg class="ring" id="ring" viewBox="0 0 240 240" role="img" aria-label="Coverage of the twelve themes of your story"></svg>
+    <div id="ringAct" style="min-height:48px;margin-top:6px"></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="goal" class="small" style="margin:-2px 0 10px"></div>
+  <div class="card" id="nextUp"></div>
+  <div class="card" id="qotd"></div>
+  <div class="card" id="handoff"></div>
+  <button data-act="settings" class="ghost" style="width:100%">Settings, backup &amp; import</button>
+</section>
+
+<section id="v-rec" class="view" hidden>
+  <div class="row between">
+    <select id="rSeason" style="flex:1;min-width:0" aria-label="Season for this answer"></select>
+    <select id="rPlace" style="flex:1;min-width:0" aria-label="Place for this answer"></select>
+    <span id="rSess" class="chip" hidden></span>
+  </div>
+  <div class="chips" id="rChips"></div>
+  <div class="qcard">
+    <div class="eyebrow" id="qCat"></div>
+    <p class="q" id="qText"></p>
+    <div id="qWhy" class="mute small" hidden></div>
+    <div id="deep"></div>
+    <div id="photoThumb"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="sm" data-act="newQ">New question</button>
+      <button class="sm" data-act="deeper" id="deeperBtn">Go deeper</button>
+      <button class="sm" data-act="lensPick">Lens</button>
+      <button class="sm" data-act="free">Free talk</button>
+      <button class="sm ai" data-act="photo">From a photo</button>
+      <button class="sm" data-act="mine">My question</button>
+    </div>
+    <input type="file" id="photoIn" accept="image/*" hidden>
+  </div>
+  <textarea id="ta" class="serif" placeholder="Tap the mic and talk. Your words appear here as you speak. You can edit or just type."></textarea>
+  <div id="srNote" class="note" hidden></div>
+  <div id="takes"></div>
+  <div class="recbar">
+    <div class="timer" id="timer">0:00</div>
+    <button class="mic" id="mic" data-act="mic" aria-label="Start recording"></button>
+    <div class="side small mute" id="micState">Tap to record</div>
+  </div>
+  <div class="row">
+    <button class="primary" style="flex:1" data-act="saveTurn">Save answer</button>
+    <button data-act="discard">Discard</button>
+  </div>
+  <p class="small mute" style="margin-top:12px" id="recHint"></p>
+  <button data-act="finish" id="finishBtn" class="ghost" style="width:100%" hidden>Finish session</button>
+</section>
+
+<section id="v-lib" class="view" hidden>
+  <h2 style="margin-top:4px">Library</h2>
+  <input id="libQ" type="search" placeholder="Search your transcripts" autocomplete="off">
+  <button class="ai" data-act="askBook" style="width:100%;margin-top:8px">Ask your book a question</button>
+  <div id="libList"></div>
+</section>
+
+<section id="v-mom" class="view" hidden>
+  <div class="row between"><h2 style="margin:4px 0">Magic moments</h2><button class="primary sm" data-act="newMoment">+ Capture</button></div>
+  <p class="mute small">The inexplicable, the uncanny, the held breath. Each becomes a question, and maybe a parable.</p>
+  <div id="momList"></div>
+  <h2>Lenses</h2>
+  <p class="mute small">Ten ways to look at a moment. Tap one for Socratic questions.</p>
+  <div class="grid2" id="lensGrid"></div>
+</section>
+
+<section id="v-book" class="view" hidden>
+  <h2 style="margin-top:4px">The book</h2>
+  <div class="card" id="titleCard"></div>
+  <div class="card ai" id="voiceCard"></div>
+  <div class="row between"><h2 style="margin:14px 0 6px">Seasons</h2><button class="primary sm" data-act="newSeason">+ Season</button></div>
+  <div id="seasonList"></div>
+  <div class="row between"><h2 style="margin:14px 0 6px">Places</h2><button class="primary sm" data-act="newPlace">+ Place</button></div>
+  <p class="mute small" style="margin:0 0 6px">The towns, straits and capes the book moves through.</p>
+  <div class="card" id="chart" style="padding:8px"></div>
+  <div id="placeList"></div>
+  <h2 style="margin:14px 0 6px">The cast</h2>
+  <p class="mute small" style="margin:0 0 6px">Everyone who shared a boat with you. Decide how each will be named before the book goes anywhere.</p>
+  <div id="castList"></div>
+  <div class="row between"><h2 style="margin:14px 0 6px">Chapters</h2><span class="row"><button class="sm" data-act="seedChapters">From seasons</button><button class="primary sm" data-act="newChapter">+ Chapter</button></span></div>
+  <div id="chapList"></div>
+  <button class="ai" data-act="continuity" style="width:100%;margin-top:16px">Check the whole book for conflicts</button>
+  <button data-act="manuscript" style="width:100%;margin-top:8px">Export manuscript</button>
+</section>
+
+</div>
+
+<nav aria-label="Sections"><div class="inner" id="nav"></div></nav>
+<div id="back" hidden></div>
+<div id="sheet" hidden role="dialog" aria-modal="true"><header><h2 id="sheetTitle"></h2><button class="sm" data-act="closeSheet" aria-label="Close">Close</button></header><div id="sheetBody"></div></div>
+<div id="dlg" hidden role="alertdialog" aria-modal="true"><div class="box"><p id="dlgMsg"></p><div class="row" style="justify-content:flex-end"><button id="dlgNo">Cancel</button><button id="dlgYes" class="primary">OK</button></div></div></div>
+<div id="toast" hidden></div>
+
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>[...e.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const wc=t=>((t||"").trim().match(/\S+/g)||[]).length;
+const mmss=s=>Math.floor(s/60)+":"+String(Math.round(s%60)).padStart(2,"0");
+const fmtD=i=>new Date(i).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+const fmtT=i=>new Date(i).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+const pad=n=>String(n).padStart(2,"0");
+const stamp=i=>{const d=new Date(i);return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`};
+let toastT;
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3600)}
+function ask(msg,yes="OK"){return new Promise(res=>{$("#dlgMsg").textContent=msg;$("#dlgYes").textContent=yes;$("#dlg").hidden=false;const done=v=>{$("#dlg").hidden=true;$("#dlgYes").onclick=$("#dlgNo").onclick=null;res(v)};$("#dlgYes").onclick=()=>done(true);$("#dlgNo").onclick=()=>done(false);$("#dlgNo").focus()})}
+const stable=o=>Array.isArray(o)?"["+o.map(stable).join(",")+"]":o&&typeof o==="object"?"{"+Object.keys(o).filter(k=>k!=="u"&&o[k]!==undefined).sort().map(k=>JSON.stringify(k)+":"+stable(o[k])).join(",")+"}":JSON.stringify(o);
+const hsh=o=>{const s=stable(o);let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return h+":"+s.length};
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* ---------- environment: inside a Claude viewer or a plain browser ---------- */
+const IN_AI=typeof window.claude!=="undefined";
+let SAMPLE=null,DBX=null,DICT=undefined,DL=null,TTS=null,syncMsg="";
+const MODEL={model:"claude-sonnet-5-5",modelTier:"default"};
+document.body.classList.toggle("in-ai",IN_AI);
+
+/* ---------- content ---------- */
+const CATS={origin:"Origins & Calling",boat:"Boat & Craft",water:"Water & Weather",place:"Places & Waters",crew:"Crew & Characters",danger:"Danger & Fear",magic:"Magic Moments",luck:"Luck & Money",body:"Body & Work",home:"Leaving & Returning",loss:"Loss & Mortality",fish:"The Fish",meaning:"Meaning"};
+const EXTRA={ghost:"From your ghostwriter",free:"Free talk",moment:"A magic moment",lens:"Socratic lens",photo:"From a photo",mine:"Your own question"};
+const catName=c=>CATS[c]||EXTRA[c]||c;
+const QB=[
+["origin","Take me to the first time you knew you'd be on the water for a living. Where were you standing?"],
+["origin","How did you first land a spot on a boat? Who said yes, and why do you think they did?"],
+["origin","What did you think Alaska was before you went? What was it actually?"],
+["origin","Describe the day you left for your very first season: what you packed, who saw you off, what you were afraid to say."],
+["origin","What didn't you know that you didn't know, back then?"],
+["origin","Who taught you the work? What was the first thing they taught you without saying a word?"],
+["boat","Walk me around your boat the way you'd show a stranger: deck, galley, bunk, engine room. Where is your place?"],
+["boat","What does the boat smell like, and sound like at 3 a.m. at anchor?"],
+["boat","Tell me about a repair you made at sea that you had no business being able to make."],
+["boat","What's a tool, a knot, or a habit that's yours alone? Where did it come from?"],
+["boat","Which boat did you love most, and what did it cost you?"],
+["boat","What does the boat do when it's unhappy? How do you know before anything breaks?"],
+["water","Describe the weather that made you respect the weather."],
+["water","What does the water look like before a change that nobody else can see?"],
+["water","Tell me about a morning so beautiful it hurt. Where was the boat, and what was the light doing?"],
+["water","What does the tide teach that no person ever has?"],
+["water","Describe a fog night. What does it do to time and to the crew?"],
+["water","What do you hear on the water that people on land would never believe?"],
+["crew","Tell me about the best skipper you ever fished for. What did they do with their hands and their silences?"],
+["crew","Who was the one character you could not have made up?"],
+["crew","Describe a fight on the boat. What was it really about?"],
+["crew","Who did you trust with your life, and when did you know?"],
+["crew","Tell me about a greenhorn who showed up and changed over one season."],
+["crew","Who do you think of when you think of the crew you'll never see again?"],
+["danger","Tell me about the closest you came. Start one minute before it began."],
+["danger","What does fear feel like in your hands, your stomach, your voice?"],
+["danger","Describe a decision you made in seconds that you've replayed for years."],
+["danger","Tell me about a time you were scared and nobody else knew."],
+["danger","What rule did you learn that somebody had to pay for?"],
+["danger","When did the sea stop being scenery and become a presence?"],
+["magic","Tell me about a moment on the water you still can't explain: the water, the weather, an animal, or a feeling."],
+["magic","Describe a night of bioluminescence or northern lights, or a night that was just wrong. What did you notice first?"],
+["magic","Tell me about a whale, bear, eagle, or seal that seemed to look back at you. What did it do, and what did you do?"],
+["magic","Was there a time you knew something before it happened: which spot to fish, when to leave? How did you know?"],
+["magic","Tell me about a coincidence that gave you chills."],
+["magic","Describe the stillest moment you remember on a boat. What did it feel like inside?"],
+["magic","Was there a moment when time slowed, sped up, or stopped? Where were you?"],
+["luck","Tell me about the best opening of your life. What did it feel like to see the water alive with fish?"],
+["luck","Tell me about a season that broke you financially, or nearly did. What did it do to you?"],
+["luck","How did you decide when to move, when to stay, when to gamble? Was that skill or luck, and how would you tell?"],
+["luck","What did money mean to you out there, and what does it mean now?"],
+["luck","Tell me about a time you made far more or far less than you should have, and what it taught you."],
+["luck","What is 'enough'? When did you first feel you had it, or know you never would?"],
+["body","What does your body remember from the work? Hands, back, sleep, hunger."],
+["body","Describe the longest stretch you worked without sleep. What did your mind do?"],
+["body","Describe the rhythm of a set from start to finish, as if it were a piece of music."],
+["body","What was food like on the boat? Which meal do you still dream about?"],
+["body","What does the first shower after a season feel like?"],
+["body","Tell me about a small private ritual: before the first set, at the end of the day, at season's end."],
+["home","What was it like leaving home at the start of a season? Who did you leave, and what did you tell yourself?"],
+["home","What's the first thing you feel when the boat turns toward town at season's end?"],
+["home","How did you change between the first day and the last day of a season? And between your first season and your latest?"],
+["home","What did people at home never understand about where you went?"],
+["home","Tell me about the harbor: the sounds, the smells, the people you only see there."],
+["home","Which season felt like the end of something, and which felt like a return?"],
+["loss","Who or what did the water take from you, or from someone you knew?"],
+["loss","Tell me about someone who is gone. What do they still teach you?"],
+["loss","What did you let go of on the water that you couldn't have let go of on land?"],
+["loss","Describe a memorial, or a quiet moment of respect, on the water."],
+["loss","What do you want a young fisherman fifty years from now to know?"],
+["loss","What scares you more now than it did then, and what scares you less?"],
+["fish","Tell me about the first fish you ever handled. What did you notice?"],
+["fish","Describe a salmon's last stretch: where it's from, what it's doing, where it's going. How do you feel about being part of that?"],
+["fish","What is the feeling of a full deck or hold, and what is its opposite?"],
+["fish","If each species you've fished were a person, who would they be?"],
+["fish","Tell me about walking a stream in the fall and seeing spawned-out salmon. What went through your mind?"],
+["fish","What do you owe the fish?"],
+["meaning","If you had to say what the water taught you in one sentence, what would you say, and what would you have to leave out?"],
+["meaning","Do you believe the sea is indifferent to you? Why, and what experience would change your mind?"],
+["meaning","What makes a good fisherman? Who comes to mind, and what do they have in common?"],
+["meaning","What do you know now that you can't prove?"],
+["meaning","Is a season an ending or a return? Why does it feel like going in a circle?"],
+["meaning","What question have you been carrying since your first season?"],
+["place","Which place in Southeast Alaska feels most like home on the water, and why that one?"],
+["place","Describe a harbor you know so well you could draw it blind: the docks, the smells, who's usually there."],
+["place","Tell me about a stretch of water that has a mood. What is it like when it turns on you?"],
+["place","Which place did you hope never to go back to, and which one did you always want to return to?"],
+["place","What do the names on the chart not tell you about a place? What do you know that isn't written down?"],
+["place","Tell me about a spot only a few people know. How did you learn it?"],
+["place","Describe a run between two places you've made a hundred times. What do you notice now that you stopped noticing years ago?"],
+["place","What has changed in a place you've known for years?"]
+].map(([c,q])=>({c,q}));
+
+const DEEPER=[
+"What did you believe in that moment, and what did you actually know?",
+"What do you mean by that word? Say it again without using it.",
+"If a green deckhand argued the opposite, what would they say? How would you answer?",
+"Was that luck, skill, or something else? What's the difference?",
+"What would have had to be different for it to go the other way?",
+"What did that moment ask of you?",
+"Where else in your life has this same thing shown up?",
+"What do you understand now that you couldn't then?",
+"What was it like in your body, before the thought?",
+"What's the story you tell about it, and what's the part you leave out?",
+"Who else was there, and what would they say happened?",
+"What did you want most, right then?"
+];
+
+const LENSES=[
+{id:"cycle",n:"Cycle & Return",l:"The salmon go out and come home. So do you. What is it that returns: the fish, the season, or the one watching?",q:["Where in your life did you come back to a place and find it, or yourself, different?","If every season is 'the same' season, what made this one yours?","Is a circle a prison or a home? When did it feel like each?"]},
+{id:"time",n:"Chronos & Kairos",l:"Chronos is the clock. Kairos is the ripe moment: the opening, the set, the instant the line comes taut.",q:["Tell me about a moment that was somehow both a few seconds and forever. What happened to the clock?","How did you know the right moment? What were you reading, and could you teach it?","What was the longest hour of your life out there, and the shortest?"]},
+{id:"luck",n:"Luck, Fate & Skill",l:"Fortune, fate, and craft braid together on the water. Socrates would ask: what do you mean by 'luck'?",q:["Think of a time you were lucky. Was it only luck? What did you do to be in a place to receive it?","If a skipper makes the same call twice and gets opposite results, was one of the calls bad?","Do you believe some things were meant to happen? Which, and what would change your mind?"]},
+{id:"onemany",n:"One & Many",l:"A crew becomes one body. Where does the 'I' go?",q:["Describe a moment when the crew moved as one with no one speaking. Who were you then?","When did you feel most alone among people, and most together?","What do you owe the people you work beside that you owe no one else?"]},
+{id:"nature",n:"Nature as Teacher",l:"The water doesn't negotiate. What does it ask, and what does it teach?",q:["What did you learn from nature that no person could have told you?","When did the sea feel indifferent, and when did it feel personal? Which do you believe?","What does it mean to 'read' the water? What are you actually reading?"]},
+{id:"death",n:"Death & Impermanence",l:"The sea keeps its ledger. What does a close call or a loss reveal about what matters?",q:["What did you understand about your life in the moment you thought it might end?","What remains of someone after they're gone? What remains of a season?","If you knew it was your last season, what would you do differently on the first day?"]},
+{id:"craft",n:"Craft & Excellence",l:"Arete: excellence. Is mastery knowledge you can say, or knowledge only the hands have?",q:["What do you know how to do that you can't explain in words? How did you learn it?","Can the thing you're best at be taught? What would you have to do to a greenhorn to teach it?","What's the difference between doing the job well and doing it right?"]},
+{id:"silence",n:"Silence & Attention",l:"Night watch, the engine's hum, the long hours: what happens to a mind with nothing to do but pay attention?",q:["What did you think about on the longest watch? Did the thinking change over the years?","Describe a silence on the water that felt like company.","What do you hear when everything is quiet, outside and inside?"]},
+{id:"value",n:"Value & Enough",l:"Money, fish, a share: what is a good season, and what is enough?",q:["What did 'a good season' mean at twenty? What does it mean now?","What did the work cost that never shows on a settlement sheet?","What would you not sell for any price?"]},
+{id:"reality",n:"Appearance & Reality",l:"Plato's cave: shadows on the wall versus the thing itself. The sounder's mark isn't the school; the chart isn't the water.",q:["Tell me about a time what you saw, or what the instruments said, wasn't what was really there.","What did the town version of fishing leave out about the real thing?","What's the story you tell about a season, and what's the part underneath it?"]}
+];
+const lensName=id=>(LENSES.find(l=>l.id===id)||{}).n||id;
+const STATUS=["idea","captured","drafted","revised","final"];
+/* Southeast Alaska gazetteer: [name, kind, lat, lng]. Positions are approximate and only used to draw the chart. */
+const GAZ=[
+["Ketchikan","town",55.34,-131.64],["Metlakatla","town",55.13,-131.57],["Wrangell","town",56.47,-132.38],["Petersburg","town",56.81,-132.96],["Kake","town",56.97,-133.95],["Sitka","town",57.05,-135.33],["Juneau","town",58.30,-134.42],["Craig","town",55.48,-133.15],["Klawock","town",55.55,-133.10],["Hydaburg","town",55.21,-132.83],["Thorne Bay","town",55.68,-132.52],["Coffman Cove","town",56.01,-132.83],["Port Protection","town",56.32,-133.61],["Point Baker","town",56.35,-133.62],["Hoonah","town",58.11,-135.44],["Angoon","town",57.50,-134.58],["Tenakee Springs","town",57.78,-135.22],["Pelican","town",57.96,-136.23],["Elfin Cove","town",58.19,-136.35],["Gustavus","town",58.41,-135.74],["Haines","town",59.24,-135.44],["Skagway","town",59.46,-135.31],["Yakutat","town",59.55,-139.73],
+["Dixon Entrance","water",54.45,-132.90],["Revillagigedo Channel","water",55.15,-131.20],["Behm Canal","water",55.65,-131.20],["Tongass Narrows","water",55.37,-131.75],["Clarence Strait","water",56.10,-132.30],["Sumner Strait","water",56.45,-133.10],["Wrangell Narrows","water",56.70,-132.95],["Frederick Sound","water",57.05,-133.60],["Chatham Strait","water",57.30,-134.70],["Peril Strait","water",57.45,-135.30],["Sitka Sound","water",57.00,-135.45],["Stephens Passage","water",58.00,-134.00],["Icy Strait","water",58.22,-135.90],["Cross Sound","water",58.20,-136.50],["Lynn Canal","water",58.85,-135.15],
+["Cape Decision","cape",56.00,-134.13],["Cape Ommaney","cape",56.16,-134.65],["Cape Edgecumbe","cape",56.99,-135.85],["Cape Fanshaw","cape",57.20,-133.77],["Point Retreat","cape",58.41,-134.95],["Cape Spencer","cape",58.20,-136.64]
+];
+const KINDS=[["town","Town or village"],["harbor","Harbor"],["water","Strait, sound or passage"],["cape","Cape or point"],["anchorage","Anchorage or bay"],["ground","Fishing ground"],["cannery","Cannery or tender spot"],["other","Other"]];
+
+/* ---------- the ghostwriter's skills (also exported to book/skills/*.md by build.js) ---------- */
+const RULES=`GROUND RULES (always):
+- The author's own words are the only source of fact. Never invent events, people, places, dates, gear, numbers or quotes.
+- If the text needs a fact you do not have, write [ASK: what you need]. If a detail may be misremembered, write [VERIFY: detail]. After the first mention of a person whose naming is undecided, write [NAME?].
+- Respect naming decisions: never print a real name marked "changed name" or "composite".
+- Plain, concrete, sensory writing. No stock sea clichés ("the call of the sea", "the mighty ocean").
+- Do not guess at fishing regulations, species rules or gear terms: ask.
+- Places: use the author's spellings. Never add geography, distances, management areas or fishing-district facts the author did not state; if one is needed write [VERIFY: place fact].`;
+const SKILLS={
+interviewer:{n:"Interviewer",use:"Proposes one follow-up question after the author answers.",p:`ROLE: Interviewer for a memoir. You have just heard the author answer a question. Propose ONE follow-up question to ask next.
+Prefer, in this order: (1) a concrete sensory or scene detail they skipped (what they saw, heard, smelled, held); (2) a person they mentioned but did not describe; (3) the moment just before or just after; (4) what it felt like in the body; (5) one Socratic probe: ask what they mean by a loaded word, or what they believed versus what they knew.
+Never lead, never suggest an answer, never ask two questions. Plain spoken, as a curious deckhand would ask. 30 words or fewer.
+Reply with only JSON: {"q": "the question", "why": "five words on what gap it fills"}`},
+cleaner:{n:"Transcript cleaner",use:"Cleans a spoken transcript without changing facts or voice.",p:`ROLE: Transcript editor. Clean this spoken transcript for the author's ghostwriter.
+Do: add punctuation and paragraph breaks; remove filler (um, you know, like) and false starts; fix words the speech-to-text clearly got wrong using the context (boat names, crew names, place names, fishing terms); prefer the spellings in PLACES and SEASON RECORDS.
+Do not: change facts, order, or the author's phrasing and slang; add anything; make it more polished. Keep their voice, including profanity and humor.
+If a word is unintelligible write [unclear]. If you correct a name or term you are unsure of, mark it [check: x].
+Reply with only the cleaned text.`},
+voice:{n:"Voice profile",use:"Builds the style guide the ghostwriter follows.",p:`ROLE: Voice analyst for a ghostwriter. From the author's transcripts below, write a VOICE PROFILE the ghostwriter will follow.
+Cover, with short quoted examples from the transcripts only: sentence rhythm and length; vocabulary and fishing slang; how they open and close stories; humor (kind and frequency); how they talk about danger, money and other people; what they never say; tense and person habits; 6 to 10 phrases that are theirs.
+End with "Write like this" and "Never write like this" lists (5 bullets each). Under 450 words. Markdown. Quote only real lines; if there is too little text to judge something, say so.`},
+chapter:{n:"Ghostwriter (chapter)",use:"Drafts a chapter in the author's voice from transcripts.",p:`ROLE: Ghostwriter. Draft one chapter of the memoir in the author's first-person voice, following the VOICE PROFILE if given, using ONLY the author's transcripts and records below.
+Shape (adapt it; do not label the parts except the title):
+1. The story: scene-first. Start inside a moment. Let the captain and crew appear through what they do. Treat the important places as characters: give the reader their water, weather and sounds from the author's own details, never from outside knowledge.
+2. The Socratic turn: the question the moment opens, wrestled with the way the author actually did in the transcripts, or in dialogue with a younger self or a skeptical deckhand. Define terms, test them, leave at least one question open. Socrates asks; he does not lecture.
+3. The parable: a short ORIGINAL fable or image (150 to 300 words) that rhymes with the true story without being it. Introduce it plainly as a parable. Do not moralize in the last line.
+4. The return: back on deck, changed. End on an image, not a conclusion.
+Use the named lens if any. Credit any named thinker; never fabricate a quote. If the material does not support a part, say what is missing with [ASK] instead of padding.
+Output Markdown: "# Title", then the chapter. After it a line "---" and a short "Ghostwriter notes" list: what you used, what you flagged, what you need next.`},
+parable:{n:"Parable writer",use:"Writes an original parable that rhymes with a real moment.",p:`ROLE: Parable writer. Write a short ORIGINAL parable (150 to 300 words) that rhymes with the author's real moment below without retelling it. Choose a new setting or characters (a lighthouse keeper, a river, a ferryman, animals) that illuminate the lens. Concrete images, no abstractions, no moral stated in the last line; let the question ring. Match the author's dry, plain tone if a voice profile is given.
+Plain text. First line: the parable's title. Last line: "Question it leaves open: ..."`},
+socrates:{n:"Socratic interviewer",use:"Examines one moment with one question at a time.",p:`ROLE: Socratic interviewer. You are helping an Alaskan fisherman examine one moment from his life. Ask ONE question per turn, two sentences at most.
+Method: take his own words and ask what he means by a key term; ask for a concrete example; offer a gentle counter-case ("what if it had gone the other way?"); ask what he assumed; ask what he understands now that he did not then. Move from the particular to the general only after the particular is vivid.
+Never lecture, never conclude for him, never praise, never supply the answer, never invent facts about the moment. If he contradicts himself, ask about it kindly.
+Reply with only your next question.`},
+distill:{n:"Dialogue distiller",use:"Extracts what the author arrived at in a Socratic dialogue.",p:`ROLE: Distiller. From the Socratic dialogue below, extract what the author actually arrived at.
+Reply with only JSON: {"insight": "one or two sentences in the author's own terms", "open_question": "the question still standing", "parable_seed": "two or three sentences describing a story that is NOT this story but rhymes with it", "lenses": ["ids from: cycle,time,luck,onemany,nature,death,craft,silence,value,reality"]}`},
+gaps:{n:"Gap finder",use:"Lists what the ghostwriter still needs to ask.",p:`ROLE: Story editor. Read the material below and list what a ghostwriter still needs to ask the author: missing scenes, scenes with no stated place, unnamed people, unclear order of events, unexplained decisions, sensory details, the feeling underneath.
+Reply with only a JSON array of up to 8 objects: {"q": "a question to ask the author, concrete and answerable in two minutes", "why": "what gap it fills", "cat": one of origin|boat|water|place|crew|danger|magic|luck|body|home|loss|fish|meaning}. Most important first.`},
+continuity:{n:"Continuity checker",use:"Finds conflicts across seasons and sessions.",p:`ROLE: Continuity editor. Compare the season records and transcripts below and find conflicts or doubts: years that disagree, a boat or captain named differently, a person aboard in two seasons who should not be, the same event told two ways, details that cannot both be true, names or places spelled inconsistently, events placed in impossible locations or sequences.
+Reply with only a JSON array of up to 12 objects: {"issue": "what conflicts", "where": "which season or session", "ask": "a neutral question to ask the author to settle it"}. If nothing conflicts, reply [].`},
+photo:{n:"Photo prompt",use:"Turns an old photo into interview questions.",p:`ROLE: Interviewer using a photograph as a memory trigger. Look at the image. In "look", write one plain sentence on what is visibly there (setting, boat, gear, weather, activity). NEVER name people or guess who anyone is from their faces or appearance; call them "a person". Then write 3 questions that invite the author to tell the story behind the photo: (1) who is in it, and where and when it was taken; (2) something the photo cannot show (sound, smell, what was said, what happened a minute before or after); (3) what the author felt then, or understands now. Plain, warm, specific to what is visible, never leading.
+Reply with only JSON: {"look": "...", "questions": ["...", "...", "..."]}`},
+recap:{n:"Session recap",use:"Summarizes a sitting and suggests what to ask next.",p:`ROLE: Session recap for a memoir interviewer. From the transcripts below write: "summary" (three plain sentences on what the author told, no embellishment), "best_line" (the single best sentence the author said, copied VERBATIM from the transcripts), "threads" (up to 3 short phrases worth pulling next), "questions" (up to 4 objects {"q","why","cat"} for the next session; cat is one of origin|boat|water|place|crew|danger|magic|luck|body|home|loss|fish|meaning).
+Reply with only JSON: {"summary":"","best_line":"","threads":[],"questions":[]}`},
+ask:{n:"Archivist (ask your book)",use:"Answers questions only from what the author has told.",p:`ROLE: Archivist of this memoir. Answer the author's question ONLY from the transcripts and records below. Be brief and concrete. Say which season or date each point comes from and quote a few words when useful. If it has not been told yet, say so plainly and suggest one question to ask next. Never invent or assume.`}
+};
+
+/* ---------- local storage ---------- */
+const mem={kv:{},audio:{}};
+const DB={db:null,ok:false,
+  open(){return new Promise(res=>{try{const r=indexedDB.open("endless-seasons",1);r.onupgradeneeded=()=>{r.result.createObjectStore("kv");r.result.createObjectStore("audio")};r.onsuccess=()=>{this.db=r.result;this.ok=true;res()};r.onerror=()=>res();r.onblocked=()=>res()}catch(e){res()}})},
+  tx(store,mode,fn){return new Promise((res,rej)=>{const t=this.db.transaction(store,mode);const rq=fn(t.objectStore(store));t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
+  async get(k){return this.ok?this.tx("kv","readonly",s=>s.get(k)):mem.kv[k]},
+  async set(k,v){if(this.ok)return this.tx("kv","readwrite",s=>s.put(v,k));mem.kv[k]=clone(v)},
+  async getA(k){return this.ok?this.tx("audio","readonly",s=>s.get(k)):mem.audio[k]},
+  async setA(k,v){if(this.ok)return this.tx("audio","readwrite",s=>s.put(v,k));mem.audio[k]=v},
+  async delA(k){if(this.ok)return this.tx("audio","readwrite",s=>s.delete(k));delete mem.audio[k]}
+};
+const DEF=()=>({title:"Endless Seasons",subtitle:"or, The Eternal Circle",alts:[],voice:"",seasons:[],sessions:[],moments:[],chapters:[],places:[],customQs:[],asked:{},queue:[],cast:{},sync:{},curId:null,lastSeason:"",lastPlace:"",draft:null,lastBackup:null,settings:{live:true,lang:"en-US",auto:true,goal:60000,sessionMin:30}});
+let S=DEF(), saveT, syncT;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{DB.set("state",S).catch(()=>toast("Couldn't save here: storage may be full or blocked."));scheduleSync()},150)}
+
+/* ---------- sync to the page database (when opened in Claude) ---------- */
+const COLS=["seasons","sessions","moments","chapters","places"];
+const metaOf=()=>({title:S.title,subtitle:S.subtitle,alts:S.alts,cast:S.cast,customQs:S.customQs,voice:S.voice||""});
+const DEFMETA=hsh({title:"Endless Seasons",subtitle:"or, The Eternal Circle",alts:[],cast:{},customQs:[],voice:""});
+let pushing=false,pullT=0;
+function scheduleSync(){if(!DBX)return;clearTimeout(syncT);syncT=setTimeout(syncPush,2500)}
+async function syncPush(){
+  if(!DBX||pushing)return;pushing=true;
+  try{
+    const now=Date.now();
+    for(const col of COLS){
+      for(const e of S[col]){const k=col+"/"+e.id,h=hsh(e);if(S.sync[k]!==h){e.u=now;await DBX.doc(k).set(clone(e));S.sync[k]=h}}
+      const ids=new Set(S[col].map(e=>e.id));
+      for(const k of Object.keys(S.sync)){if(k.startsWith(col+"/")&&!ids.has(k.slice(col.length+1))){await DBX.doc(k).delete();delete S.sync[k]}}
+    }
+    const mh=hsh(metaOf());if(S.sync.meta!==mh){await DBX.doc("meta/book").set({...clone(metaOf()),u:now});S.sync.meta=mh}
+    await DB.set("state",S);syncMsg="Synced "+fmtT(Date.now());
+  }catch(e){syncMsg="Sync paused ("+(e&&e.code||"error")+")"}
+  finally{pushing=false;if(tab==="home")renderHome()}
+}
+async function syncPull(){
+  if(!DBX)return;let changed=false;
+  try{
+    for(const col of COLS){
+      const snap=await DBX.collection(col).get(),rem={};snap.docs.forEach(d=>{rem[d.id]=clone(d.data())});
+      for(const id of Object.keys(rem)){
+        const k=col+"/"+id,r=rem[id],l=S[col].find(x=>x.id===id),rh=hsh(r);
+        if(!l){if(!S.sync[k]){S[col].push(r);S.sync[k]=rh;changed=true}}
+        else if(S.sync[k]!==rh&&hsh(l)===S.sync[k]){S[col][S[col].indexOf(l)]=r;S.sync[k]=rh;changed=true}
+      }
+      for(const l of [...S[col]]){const k=col+"/"+l.id;if(!rem[l.id]&&S.sync[k]&&hsh(l)===S.sync[k]){S[col]=S[col].filter(x=>x!==l);delete S.sync[k];changed=true}}
+    }
+    const md=await DBX.doc("meta/book").get();
+    if(md.exists){const r=clone(md.data()),rh=hsh(r),lh=hsh(metaOf());
+      const take=S.sync.meta===undefined?lh===DEFMETA:(rh!==S.sync.meta&&lh===S.sync.meta);
+      if(take){["title","subtitle","alts","cast","customQs","voice"].forEach(f=>{if(r[f]!==undefined)S[f]=r[f]});S.sync.meta=rh;changed=true}}
+    syncMsg="Synced "+fmtT(Date.now());
+  }catch(e){syncMsg="Sync paused ("+(e&&e.code||"error")+")"}
+  if(changed){await DB.set("state",S).catch(()=>{});if(!sheetOpen())refresh()}
+  scheduleSync();if(tab==="home")renderHome();
+}
+
+/* ---------- derived ---------- */
+const turnsAll=()=>S.sessions.flatMap(s=>s.turns.map(t=>({...t,sid:s.id})));
+const seasonName=id=>{const s=S.seasons.find(x=>x.id===id);return s?`${s.year||"?"}${s.boat?" · "+s.boat:s.fishery?" · "+s.fishery:""}`:""};
+const placeName=id=>{const p=S.places.find(x=>x.id===id);return p?p.name:""};
+const placeWords=id=>turnsAll().filter(t=>t.placeId===id).reduce((a,t)=>a+wc(t.text),0);
+const totalWords=()=>turnsAll().reduce((a,t)=>a+wc(t.text),0);
+const totalSecs=()=>turnsAll().reduce((a,t)=>a+(t.dur||0),0);
+const curSession=()=>S.sessions.find(s=>s.id===S.curId);
+function catCounts(){const c={};turnsAll().forEach(t=>{if(wc(t.text)>0)c[t.cat]=(c[t.cat]||0)+1});return c}
+const sheetOpen=()=>!$("#sheet").hidden;
+
+/* ---------- navigation ---------- */
+const TABS=[["home","Home",'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/>'],["rec","Record",'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>'],["lib","Library",'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'],["mom","Moments",'<path d="M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z"/>'],["book","Book",'<path d="M4 5c3-1.5 5-1.5 8 0 3-1.5 5-1.5 8 0v14c-3-1.5-5-1.5-8 0-3-1.5-5-1.5-8 0z"/><path d="M12 5v14"/>']];
+$("#nav").innerHTML=TABS.map(([k,l,p])=>`<button data-tab="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>${l}</button>`).join("");
+let tab="home";
+function go(t){tab=t;$$(".view").forEach(v=>v.hidden=v.id!=="v-"+t);$$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));({home:renderHome,rec:renderRec,lib:renderLib,mom:renderMom,book:renderBook})[t]();window.scrollTo(0,0)}
+
+/* ---------- sheet ---------- */
+let sheetUrls=[],ctl=null;
+function bindIds(id){$$('#sheetBody [data-act][data-id=""]').forEach(b=>{b.dataset.id=id})}
+function newCtl(){if(ctl)ctl.abort();ctl=new AbortController();return ctl}
+function openSheet(title,html,mount){$("#sheetTitle").textContent=title;$("#sheetBody").innerHTML=html;$("#sheet").hidden=false;$("#back").hidden=false;$("#sheetBody").scrollTop=0;document.body.style.overflow="hidden";mount&&mount($("#sheetBody"))}
+function closeSheet(){if(ctl){ctl.abort();ctl=null}$("#sheet").hidden=true;$("#back").hidden=true;$("#sheetBody").innerHTML="";document.body.style.overflow="";sheetUrls.forEach(u=>URL.revokeObjectURL(u));sheetUrls=[];refresh()}
+function refresh(){if(tab==="home")renderHome();if(tab==="lib")renderLib();if(tab==="mom")renderMom();if(tab==="book")renderBook();if(tab==="rec")renderRecMeta()}
+
+/* ---------- Claude helpers ---------- */
+function aiErr(e){
+  const c=e&&e.code;
+  return ({not_granted:"Claude access was declined for this page. Allow it in the page's permissions to use this.",sampling_disabled:"Claude isn't available for this account.",rate_limited:"Claude is busy or your usage limit is reached. Try again later.",session_expired:"Sign in to Claude again, then retry.",prompt_too_large:"That's too much text for one request. Try a single season.",refused:"Claude declined that request. Try changing what you ask.",empty_completion:"Claude returned nothing. Try again.",invalid_json:"Claude's answer wasn't usable. Try again."})[c]||"Claude couldn't finish that. Try again.";
+}
+function bookCtx(seasonId){
+  const P=[`BOOK: "${S.title}, ${S.subtitle}", a memoir by an Alaskan commercial fisherman.`];
+  if(S.voice&&S.voice.trim())P.push("VOICE PROFILE:\n"+S.voice.trim());
+  const L=(seasonId?S.seasons.filter(s=>s.id===seasonId):S.seasons).map(s=>`SEASON ${s.year} · boat: ${s.boat||"?"} · fishery: ${s.fishery||"?"} · area: ${s.area||"?"} · places: ${(s.placeIds||[]).map(placeName).filter(Boolean).join(", ")||"?"} · author's role: ${s.role||"?"}\n  Got the job: ${[s.gotWhere,s.gotHow].filter(Boolean).join(" — ")||"?"}${s.deal?" (deal: "+s.deal+")":""}\n  Captain: ${s.captain?s.captain+(s.captainNote?" ("+s.captainNote+")":""):"?"}\n  Crew: ${(s.crew||[]).map(c=>c.name+(c.role?" ("+c.role+")":"")+(c.note?" — "+c.note:"")).join("; ")||"?"}${s.note?"\n  In a line: "+s.note:""}`);
+  if(L.length)P.push("SEASON RECORDS:\n"+L.join("\n"));
+  if(S.places.length)P.push("PLACES (the author's own spellings):\n"+S.places.map(p=>`${p.name} (${p.kind})${p.note?": "+p.note:""}`).join("\n"));
+  const nm=castList().map(p=>`${p.name}: ${({real:"real name OK",changed:"CHANGE the name",composite:"COMPOSITE"})[(S.cast[p.key]||{}).d]||"naming undecided"}`);
+  if(nm.length)P.push("NAMING DECISIONS:\n"+nm.join("\n"));
+  return P.join("\n\n");
+}
+function evidence(seasonId,max=60000){
+  const L=turnsAll().filter(t=>t.text.trim()&&(!seasonId||t.seasonId===seasonId)).sort((a,b)=>((b.gold?1:0)-(a.gold?1:0))||a.ts.localeCompare(b.ts));
+  let out="";for(const t of L){const s=`[${fmtD(t.ts)}${t.gold?" · GOLD":""} · ${seasonName(t.seasonId)||"no season"}${placeName(t.placeId)?" · "+placeName(t.placeId):""} · Q: ${t.q||"free talk"}]\n${t.text.trim()}\n\n`;if((out+s).length>max)break;out+=s}
+  return out;
+}
+const momentBlock=m=>`MOMENT: ${m.title}\nSeason: ${seasonName(m.seasonId)||"unspecified"}\nPlace: ${placeName(m.placeId)||"unspecified"}\nWhat happened: ${m.what||"(not written yet)"}\nQuestion it opens: ${m.question||"(none yet)"}\nLenses: ${(m.lenses||[]).map(lensName).join(", ")||"none"}${m.seed?"\nExisting parable seed: "+m.seed:""}${(m.others||[]).map(o=>`\nAnother person's account (${o.who||"someone"}): ${o.text}`).join("")}`;
+
+/* ---------- HOME ---------- */
+let ringSel=null;
+function arc(cx,cy,r,a0,a1){const p=a=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const[x0,y0]=p(a0),[x1,y1]=p(a1);return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`}
+function capsLine(){
+  if(!IN_AI)return "Local copy: audio recording works here. Open the page in Claude for the ghostwriter and sync.";
+  const bits=[SAMPLE?"Claude (Sonnet 5.5) ready":"Claude unavailable",DBX?(syncMsg||"Sync connecting"):"Not syncing",DICT?"dictation on":"keyboard dictation only"];
+  return bits.join(" · ");
+}
+function renderHome(){
+  $("#hTitle").textContent=S.title;$("#hSub").textContent=S.subtitle;
+  const keys=Object.keys(CATS),cc=catCounts(),n=keys.length,seg=2*Math.PI/n,gap=.07;
+  let svg="";
+  keys.forEach((k,i)=>{const a0=-Math.PI/2+i*seg+gap/2,a1=-Math.PI/2+(i+1)*seg-gap/2,c=cc[k]||0;
+    const col=c?"var(--amber)":"var(--line)",op=c?Math.min(1,.35+c*.2):1;
+    svg+=`<path d="${arc(120,120,96,a0,a1)}" stroke="${col}" stroke-opacity="${op}" class="${ringSel===k?"sel":""}" data-ring="${k}"><title>${esc(CATS[k])}: ${c} answered</title></path>`});
+  const w=totalWords(),sel=ringSel;
+  svg+=`<text class="ringc" x="120" y="${sel?112:118}" font-size="${sel?15:34}">${sel?esc(CATS[sel]):w.toLocaleString()}</text><text class="ringc" x="120" y="${sel?136:144}" font-size="12" style="fill:var(--mute)">${sel?(cc[sel]||0)+" answered":"words captured"}</text>`;
+  $("#ring").innerHTML=svg;
+  $("#ringAct").innerHTML=sel?`<button class="primary sm" data-act="askCat" data-c="${sel}">Ask me about ${esc(CATS[sel])}</button>`:`<span class="small mute">Twelve themes. Tap a segment to fill the circle.</span>`;
+  const mins=Math.round(totalSecs()/60);
+  $("#stats").innerHTML=[[S.sessions.length,"Sessions"],[mins,"Minutes"],[S.moments.length,"Moments"],[S.chapters.length,"Chapters"]].map(([a,b])=>`<div class="stat"><b>${a}</b><span>${b}</span></div>`).join("");
+  const goal=S.settings.goal||60000,pct=Math.min(100,w/goal*100),st=streak();
+  $("#goal").innerHTML=`<div style="height:8px;border-radius:99px;background:var(--line);overflow:hidden"><div style="height:100%;width:${pct.toFixed(1)}%;background:var(--amber)"></div></div><div class="mute" style="margin-top:4px">${w.toLocaleString()} of ${goal.toLocaleString()} words${st?` · ${st}-day streak`:""}</div>`;
+  const qs=allQs(),qd=qs[Math.floor(Date.now()/864e5)%qs.length];
+  $("#qotd").innerHTML=`<div class="eyebrow">Question of the day</div><p class="q" style="font-size:1.1rem">${esc(qd.q)}</p><button class="sm primary" data-act="askQotd">Answer it</button>`;
+  let nx;
+  if(!S.seasons.length)nx=`<div class="eyebrow">Next up</div><h3>Name your first season</h3><p class="mute">A year, a boat, how you got the job, the captain, the crew. The book is organized around seasons, and each one becomes a set of interview questions.</p><button class="primary" data-act="newSeason">Add a season</button>`;
+  else if(!S.sessions.length)nx=`<div class="eyebrow">Next up</div><h3>Start with where it began</h3><p class="mute">Your first session: how you came to the water. Ten minutes is plenty.</p><button class="primary" data-act="askCat" data-c="origin">Begin the interview</button>`;
+  else{const least=keys.map(k=>[k,cc[k]||0]).sort((a,b)=>a[1]-b[1])[0][0];nx=`<div class="eyebrow">Next up</div><h3>${esc(CATS[least])} is the quietest part of the circle</h3><p class="mute">${cc[least]||0} answered so far. Fill it in, or capture a magic moment while it's fresh.</p><div class="row"><button class="primary" data-act="askCat" data-c="${least}">Ask me about it</button><button data-act="newMoment">Capture a moment</button></div>`}
+  const cur=curSession();if(cur&&cur.turns.length)nx+=`<p class="small mute" style="margin:12px 0 0">Session in progress · ${cur.turns.length} answers. <a href="#" data-act="goRec" style="color:var(--amber)">Resume</a></p>`;
+  $("#nextUp").innerHTML=nx;
+  const newS=S.sessions.filter(s=>!s.handed&&s.turns.length),newM=S.moments.filter(m=>!m.handed),nt=newS.reduce((a,s)=>a+s.turns.length,0);
+  $("#handoff").innerHTML=`<div class="eyebrow">Ghostwriter</div><h3>${nt} new answer${nt===1?"":"s"} · ${newM.length} new moment${newM.length===1?"":"s"}</h3><p class="mute small">${DBX?"Everything syncs to this page's database, so Claude Code reads your book directly. No files to move.":"Export a handoff file, drop it in the inbox folder of your workspace, and tell Claude \"new handoff\"."}</p><div class="row"><button class="${DBX?"":"primary"}" data-act="exportHandoff" ${nt||newM.length?"":"disabled"}>Export handoff (.md)</button><button class="local-only" data-act="exportAudio" ${nt?"":"disabled"}>Save audio</button></div><p class="small mute" style="margin:10px 0 0">${esc(capsLine())}</p><p class="small mute" style="margin:4px 0 0">Last backup: ${S.lastBackup?fmtD(S.lastBackup):"never"}</p>`;
+}
+
+/* ---------- RECORD ---------- */
+let D={q:null,cat:"origin",text:"",fu:[],blobs:[],dur:0,mime:"",photo:null};
+let catFilter="all";
+const rec={on:false,stream:null,mr:null,sr:null,t0:0,timer:null,chunks:[],base:"",finals:"",ctx:null,raf:0,wl:null};
+const dict={on:false,rec:false,el:null,base:"",finals:""};
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const draftDirty=()=>D.text.trim()||D.blobs.length||rec.on;
+const MICSVG='<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+
+function allQs(){return [...QB,...S.customQs.map(x=>({c:x.cat||"ghost",q:x.q,why:x.why}))]}
+function pickQ(cat){
+  if(S.queue&&S.queue.length)return S.queue[0];
+  let pool=allQs().filter(x=>cat==="all"||x.c===cat);if(!pool.length)pool=allQs();
+  let fresh=pool.filter(x=>!S.asked[x.q]&&x.q!==D.q);if(!fresh.length)fresh=pool.filter(x=>x.q!==D.q);if(!fresh.length)fresh=pool;
+  const ghost=fresh.filter(x=>x.c==="ghost");const from=ghost.length&&Math.random()<.5?ghost:fresh;
+  return from[Math.floor(Math.random()*from.length)];
+}
+function setQ(o){if(S.queue&&S.queue[0]&&S.queue[0].q===o.q)S.queue.shift();D.q=o.q;D.cat=o.c;D.why=o.why||"";D.fu=[];persistDraft();renderRecMeta()}
+function persistDraft(){S.draft={q:D.q,cat:D.cat,why:D.why,text:D.text,fu:D.fu,dur:D.dur,mime:D.mime,photo:D.photo};save()}
+function renderRec(){
+  if(!D.q&&D.cat!=="free")setQ(pickQ(catFilter));
+  renderRecMeta();$("#ta").value=D.text;
+}
+function renderRecMeta(){
+  const sel=$("#rSeason");sel.innerHTML=`<option value="">No season chosen</option>`+[...S.seasons].sort((a,b)=>(a.year||0)-(b.year||0)).map(s=>`<option value="${s.id}">${esc(seasonName(s.id))}</option>`).join("");sel.value=S.lastSeason||"";
+  const ps=$("#rPlace");ps.innerHTML=`<option value="">No place chosen</option>`+[...S.places].sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");ps.value=S.lastPlace||"";
+  const cur=curSession(),sp=$("#rSess");sp.hidden=!(cur&&cur.turns.length);if(cur)sp.textContent=`Session · ${cur.turns.length} answer${cur.turns.length===1?"":"s"} · ${Math.round(cur.turns.reduce((a,t)=>a+(t.dur||0),0)/60)}/${S.settings.sessionMin||30} min`;
+  $("#finishBtn").hidden=!(cur&&cur.turns.length);
+  const cats=[["all","All"],...Object.entries(CATS)];if(S.customQs.some(q=>(q.cat||"ghost")==="ghost"))cats.push(["ghost","From Claude"]);
+  $("#rChips").innerHTML=cats.map(([k,l])=>`<button class="chip ${catFilter===k?"on":""}" data-act="filter" data-c="${k}">${esc(l)}</button>`).join("");
+  $("#qCat").textContent=catName(D.cat)+(S.queue&&S.queue.length?` · ${S.queue.length} more queued`:"");
+  $("#qText").textContent=D.q||"Free talk: tell me anything about the season you're in. Where are you, what do you see, what are you remembering?";
+  $("#qWhy").hidden=!D.why;$("#qWhy").textContent=D.why?"Why this question: "+D.why:"";
+  $("#deep").innerHTML=D.fu.map(f=>`<div class="deep">${esc(f)}</div>`).join("")+(fuBusy?'<div class="deep mute">Claude is listening…</div>':"");
+  $("#takes").innerHTML=D.blobs.map((b,i)=>{const u=URL.createObjectURL(b);return `<audio controls preload="metadata" src="${u}" aria-label="Take ${i+1}"></audio>`}).join("");
+  const noMic=IN_AI&&!DICT;
+  $("#mic").hidden=noMic;$("#timer").hidden=noMic;$("#micState").hidden=noMic;
+  $("#recHint").textContent=IN_AI?(DICT?"Dictation types your words as you speak. Audio isn't kept in this view.":"Type here, or tap the microphone key on your keyboard to dictate."):"Keep this screen on and in front while recording. Audio is always saved; live transcription needs signal.";
+  $("#deeperBtn").textContent=SAMPLE?"Ask Claude":"Go deeper";
+  showThumb();
+  updateRecUI();
+}
+function updateRecUI(){
+  const m=$("#mic");m.classList.toggle("live",rec.on);m.setAttribute("aria-label",rec.on?"Stop":"Start");
+  m.innerHTML=rec.on?'<svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>':MICSVG;
+  $("#micState").innerHTML=rec.on?'<span class="pill"><i class="dot"></i>Listening</span>':(D.blobs.length?"Tap to add more":"Tap to talk");
+  $("#ta").readOnly=rec.on&&(!!rec.sr||(dict.on&&dict.rec));
+  $("#timer").textContent=mmss(rec.on?D.dur+Math.round((Date.now()-rec.t0)/1000):D.dur);
+}
+function note(msg){const n=$("#srNote");n.hidden=!msg;n.textContent=msg||""}
+
+/* dictation (inside Claude) */
+function setDictText(){const el=dict.el;if(!el)return;const b=dict.base,f=dict.finals;let v=b+((b&&f&&!/\s$/.test(b)&&!/^\s/.test(f))?" ":"")+f;el.value=v;if(dict.partial)el.value=v+(v&&!/\s$/.test(v)?" ":"")+dict.partial;el.scrollTop=1e6}
+function startDict(el,isRec){
+  dict.el=el;dict.base=el.value;dict.finals="";dict.partial="";dict.on=true;dict.rec=!!isRec;
+  if(isRec){rec.on=true;rec.t0=Date.now();clearInterval(rec.timer);rec.timer=setInterval(updateRecUI,500);try{if(navigator.wakeLock)navigator.wakeLock.request("screen").then(w=>{rec.wl=w}).catch(()=>{})}catch(e){}}
+  DICT.start().catch(e=>{endDict();const m={not_granted:"Dictation is turned off for this page.",unavailable:"Dictation isn't available for this account.",rate_limited:"Dictation is busy. Try again shortly.",upstream_error:"Dictation hit a problem. Try again."}[e.code];if(m)note(m)});
+  if(isRec)updateRecUI();
+}
+function endDict(){
+  if(!dict.on)return;dict.on=false;dict.partial="";
+  if(dict.rec){rec.on=false;clearInterval(rec.timer);D.dur+=Math.round((Date.now()-rec.t0)/1000);D.text=$("#ta").value;try{rec.wl&&rec.wl.release()}catch(e){}persistDraft();updateRecUI();autoFollow()}
+  else{const b=$("#dlgMic");if(b)b.textContent="Dictate"}
+}
+function initDictation(){
+  DICT.onPartial(e=>{if(!dict.on)return;dict.partial=e.text||"";setDictText()});
+  DICT.onFinal(e=>{if(!dict.on)return;dict.finals+=e.text;dict.partial="";setDictText();if(dict.rec)D.text=dict.el.value});
+  DICT.onState(e=>{if(e.state==="idle")endDict()});
+}
+
+/* audio + live speech (plain browser) */
+async function startAudio(){
+  if(rec.on)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){note("This browser can't record here. The microphone needs HTTPS (or localhost). You can still type, or use your keyboard's dictation mic in the box above.");return}
+  try{rec.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){note("Microphone permission was blocked ("+e.name+"). Allow it in your browser's site settings, then try again.");return}
+  const mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg"].find(m=>MediaRecorder.isTypeSupported(m))||"";
+  rec.mr=new MediaRecorder(rec.stream,mime?{mimeType:mime}:{});rec.chunks=[];
+  rec.mr.ondataavailable=e=>{if(e.data&&e.data.size)rec.chunks.push(e.data)};
+  rec.mr.onstop=async()=>{const type=rec.mr.mimeType||mime||"audio/webm";const b=new Blob(rec.chunks,{type});if(b.size){D.blobs.push(b);D.mime=type;try{await DB.setA("draft",D.blobs)}catch(e){}}persistDraft();renderRecMeta()};
+  rec.mr.start(1000);rec.t0=Date.now();rec.on=true;rec.base=$("#ta").value.trim();rec.finals="";note("");
+  rec.timer=setInterval(updateRecUI,500);
+  try{rec.wl=await navigator.wakeLock?.request("screen")}catch(e){}
+  meter();
+  if(S.settings.live&&SRC){try{startSR()}catch(e){note("Live transcription didn't start. Your audio is still being saved; edit or type the transcript after.")}}
+  else if(S.settings.live)note("This browser has no live transcription. Audio is saved; use your keyboard's dictation mic or let Claude transcribe it.");
+  updateRecUI();
+}
+function startSR(){
+  const sr=new SRC();rec.sr=sr;sr.continuous=true;sr.interimResults=true;sr.lang=S.settings.lang||"en-US";
+  sr.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i],t=r[0].transcript.trim();if(r.isFinal){rec.finals+=(rec.finals?" ":"")+t.charAt(0).toUpperCase()+t.slice(1)}else interim+=" "+t}
+    $("#ta").value=[rec.base,rec.finals,interim.trim()].filter(Boolean).join(" ");D.text=$("#ta").value;$("#ta").scrollTop=1e6};
+  sr.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){rec.sr=null;note("Live transcription is blocked or unavailable. Audio is still saved. You can type, dictate with the keyboard mic, or have Claude transcribe the audio.")}else if(e.error==="network"){note("No signal for live transcription. Audio keeps recording; it can be transcribed later.")}};
+  sr.onend=()=>{if(rec.on&&rec.sr===sr){try{sr.start()}catch(e){}}};
+  sr.start();
+}
+function meter(){
+  try{const AC=window.AudioContext||window.webkitAudioContext;rec.ctx=new AC();const src=rec.ctx.createMediaStreamSource(rec.stream),an=rec.ctx.createAnalyser();an.fftSize=512;src.connect(an);const buf=new Uint8Array(an.fftSize),m=$("#mic");
+    const loop=()=>{if(!rec.on)return;an.getByteTimeDomainData(buf);let s=0;for(const v of buf){const x=(v-128)/128;s+=x*x}m.style.setProperty("--lvl",Math.min(1,Math.sqrt(s/buf.length)*5).toFixed(2));rec.raf=requestAnimationFrame(loop)};loop()}catch(e){}
+}
+function stopAudio(){
+  if(!rec.on)return;
+  D.dur+=Math.round((Date.now()-rec.t0)/1000);rec.on=false;clearInterval(rec.timer);cancelAnimationFrame(rec.raf);
+  const sr=rec.sr;rec.sr=null;try{sr&&sr.stop()}catch(e){}
+  try{rec.mr.stop()}catch(e){}
+  rec.stream&&rec.stream.getTracks().forEach(t=>t.stop());try{rec.ctx&&rec.ctx.close()}catch(e){}
+  try{rec.wl&&rec.wl.release()}catch(e){}
+  $("#mic").style.setProperty("--lvl",0);D.text=$("#ta").value;persistDraft();updateRecUI();autoFollow();
+}
+function micToggle(){
+  if(rec.on){if(dict.on&&dict.rec){DICT.stop().catch(()=>{})}else stopAudio();return}
+  if(IN_AI){
+    if(DICT===undefined){toast("Dictation is still loading. Try again in a moment.");return}
+    if(!DICT){note("Dictation isn't available in this view. Type here, or tap the microphone key on your keyboard.");return}
+    note("");startDict($("#ta"),true);return;
+  }
+  startAudio();
+}
+document.addEventListener("visibilitychange",async()=>{
+  if(document.visibilityState==="visible"){
+    if(rec.on&&!dict.on){try{rec.wl=await navigator.wakeLock?.request("screen")}catch(e){}}
+    if(DBX&&Date.now()-pullT>20000){pullT=Date.now();syncPull()}
+  }
+});
+window.addEventListener("beforeunload",e=>{if(rec.on){e.preventDefault();e.returnValue=""}});
+
+async function saveTurn(){
+  if(rec.on){toast("Stop recording first.");return}
+  D.text=$("#ta").value;if(!D.text.trim()&&!D.blobs.length){toast("Nothing to save yet.");return}
+  let s=curSession();
+  if(!s){s={id:uid(),date:new Date().toISOString(),notes:"",handed:null,turns:[]};S.sessions.push(s);S.curId=s.id}
+  const t={id:uid(),q:D.q,cat:D.cat,fu:D.fu,text:D.text.trim(),dur:D.dur,ts:new Date().toISOString(),n:D.blobs.length,mime:D.mime,seasonId:S.lastSeason||"",placeId:S.lastPlace||"",gold:false,photo:D.photo?D.photo.id:undefined,look:D.photo?D.photo.look:undefined};
+  s.turns.push(t);if(D.q)S.asked[D.q]=(S.asked[D.q]||0)+1;
+  if(D.blobs.length){try{await DB.setA(t.id,D.blobs)}catch(e){toast("Saved the text, but the audio couldn't be stored.")}}
+  try{await DB.delA("draft")}catch(e){}
+  D={q:null,cat:"origin",text:"",fu:[],blobs:[],dur:0,mime:"",photo:null};S.draft=null;save();
+  setQ(pickQ(catFilter));$("#ta").value="";note("");toast("Saved. Next question ready.");
+}
+async function discard(){
+  if(rec.on)micToggle();
+  if(draftDirty()&&!(await ask("Discard this unsaved answer and its audio?","Discard")))return;
+  D.text="";D.blobs=[];D.dur=0;D.fu=[];D.photo=null;DB.delA("draft").catch(()=>{});$("#ta").value="";persistDraft();renderRecMeta();
+}
+async function askQuestion(o){
+  if(rec.on){toast("Stop recording first.");return false}
+  if(draftDirty()&&!(await ask("Switch questions? Your unsaved answer will be discarded.","Switch")))return false;
+  D.text="";D.blobs=[];D.dur=0;D.photo=null;DB.delA("draft").catch(()=>{});setQ(o);if(tab!=="rec")go("rec");else{$("#ta").value="";renderRecMeta()}return true;
+}
+let fuBusy=false;
+async function aiFollow(){
+  if(fuBusy||!SAMPLE)return;
+  const txt=$("#ta").value.trim();
+  if(!txt){toast("Say something first, then ask for a follow-up.");return}
+  fuBusy=true;renderRecMeta();
+  try{
+    const r=await SAMPLE.json(`${RULES}\n\n${SKILLS.interviewer.p}\n\n${bookCtx(S.lastSeason)}\n\nQUESTION ASKED: ${D.q||"(free talk)"}\n\nANSWER SO FAR:\n${txt.slice(-6000)}\n\nFOLLOW-UPS ALREADY OFFERED:\n${D.fu.join("\n")||"none"}`,{...MODEL,effort:"low",cache:false});
+    if(r&&r.q){D.fu.push(String(r.q));persistDraft()}
+  }catch(e){toast(aiErr(e))}
+  finally{fuBusy=false;renderRecMeta()}
+}
+function autoFollow(){if(SAMPLE&&S.settings.auto&&wc($("#ta").value)>=25&&!D.fu.length&&tab==="rec")aiFollow()}
+
+/* photo prompts */
+function resizeImage(file,max=1280){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",.82)};img.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("decode"))};img.src=u})}
+async function showThumb(){
+  const box=$("#photoThumb");if(!D.photo){box.innerHTML="";return}
+  const b=await DB.getA("photo:"+D.photo.id).catch(()=>null);
+  if(b&&b[0]&&D.photo){const u=URL.createObjectURL(b[0]);box.innerHTML=`<img src="${u}" alt="Photo for this answer" style="max-height:160px;border-radius:12px;margin:6px 0"><div class="small mute">${esc(D.photo.look||"")}</div>`}
+}
+async function handlePhoto(file){
+  if(!SAMPLE||!file)return;
+  const lim=await SAMPLE.limits().catch(()=>null);
+  if(!lim||!lim.images){toast("Photos can't be sent to Claude in this view.");return}
+  if(rec.on){toast("Stop recording first.");return}
+  if(draftDirty()&&!(await ask("Start from this photo? Your unsaved answer will be discarded.","Start")))return;
+  toast("Claude is looking at the photo…");
+  try{
+    const blob=await resizeImage(file);
+    const r=await SAMPLE.json(SKILLS.photo.p+"\n\n"+bookCtx(S.lastSeason),{...MODEL,effort:"low",cache:false,images:blob});
+    const qs=(r.questions||[]).map(String).filter(Boolean);if(!qs.length)throw {code:"invalid_json"};
+    const id=uid();await DB.setA("photo:"+id,[blob]);
+    D.text="";D.blobs=[];D.dur=0;D.photo={id,look:String(r.look||"")};$("#ta").value="";
+    qs.slice(1).forEach(q=>S.queue.push({c:"photo",q,why:"Photo: "+D.photo.look}));
+    setQ({q:qs[0],c:"photo",why:"Photo: "+D.photo.look});if(tab!=="rec")go("rec");
+  }catch(e){toast(aiErr(e))}
+}
+async function recap(el){
+  const s=S.sessions.find(x=>x.id===el.dataset.id),txt=s.turns.map(t=>`Q: ${t.q||"free talk"}\n${t.text}`).join("\n\n"),out=$("#recapOut");
+  if(wc(txt)<40){toast("There's not enough here to recap.");return}
+  out.innerHTML='<p class="small mute">Reading…</p>';const c=newCtl();
+  try{
+    const r=await SAMPLE.json([RULES,SKILLS.recap.p,bookCtx(s.turns[0].seasonId),"TRANSCRIPTS:\n"+txt.slice(0,80000)].join("\n\n"),{...MODEL,effort:"medium",cache:false,signal:c.signal});
+    window._gaps=Array.isArray(r.questions)?r.questions:[];
+    out.innerHTML=`<div class="card"><div class="eyebrow">Recap</div><p>${esc(r.summary)}</p>${r.best_line?`<div class="deep">${esc(r.best_line)}</div>`:""}${(r.threads||[]).length?`<p class="small mute">Threads to pull: ${r.threads.map(esc).join(" · ")}</p>`:""}${window._gaps.length?`<button class="sm primary" data-act="queueGaps">Queue ${window._gaps.length} follow-up questions</button>`:""}</div>`;
+  }catch(e){out.innerHTML="";if(e.code!=="cancelled")toast(aiErr(e))}
+}
+/* ask your book */
+let askT=[];
+function askBook(){
+  askT=[];
+  openSheet("Ask your book",`<p class="small mute" style="margin-top:0">Answers come only from what you've recorded and written.</p><div id="abLog"></div><label for="abIn">Your question</label><textarea id="abIn" style="min-height:70px" placeholder="e.g. What did the captain say about the weather in 1998?"></textarea><div class="row" style="margin-top:8px"><button class="primary" data-act="abSend">Ask</button><button class="ghost" data-act="stopAI">Stop</button></div>`);
+}
+function renderAb(){$("#abLog").innerHTML=askT.map(x=>`<div class="bubble ${x.role==="user"?"u":"a"}">${esc(x.content)}</div>`).join("");const L=$("#sheetBody");L.scrollTop=L.scrollHeight}
+async function abSend(){
+  const inp=$("#abIn"),v=inp.value.trim();if(!v)return;
+  const ev=evidence("",150000);if(!ev){toast("Nothing recorded yet to search.");return}
+  inp.value="";askT.push({role:"user",content:v});renderAb();const c=newCtl();
+  const lead=[RULES,SKILLS.ask.p,bookCtx(""),S.moments.length?"MOMENTS:\n"+S.moments.map(momentBlock).join("\n\n"):"","TRANSCRIPTS:\n"+ev].filter(Boolean).join("\n\n")+"\n\nThe author will now ask questions.";
+  const turns=[{role:"user",content:lead},...askT.slice(-8)];
+  askT.push({role:"assistant",content:"Thinking…"});renderAb();
+  try{
+    const {text}=await SAMPLE(turns,{...MODEL,effort:"medium",cache:false,signal:c.signal,onText:({text})=>{askT[askT.length-1].content=text;renderAb()}});
+    askT[askT.length-1].content=text.trim();
+  }catch(e){askT.pop();if(e.code!=="cancelled")toast(aiErr(e))}
+  renderAb();
+}
+/* manuscript */
+const cleanDraft=d=>(d||"").replace(/\n-{3,}\s*\n[\s\S]*ghostwriter notes[\s\S]*$/i,"").trim();
+function manuscriptMd(){
+  const L=[`# ${S.title}`,`*${S.subtitle}*`,""];let n=0;
+  S.chapters.forEach(c=>{if(!(c.draft||"").trim())return;n++;let d=cleanDraft(c.draft);if(!/^#\s/.test(d))d=`# ${c.title}\n\n`+d;L.push(d,"")});
+  return {md:L.join("\n"),n};
+}
+const inl=t=>t.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>").replace(/\[(ASK|VERIFY|NAME\?|SENSITIVE)([^\]]*)\]/g,'<span class="flag">[$1$2]</span>');
+function mdToHtml(md){return esc(md).split(/\n{2,}/).map(b=>{b=b.trim();if(!b)return"";if(/^#{1,3}\s/.test(b)){const n=b.match(/^#+/)[0].length;return `<h${n}>${inl(b.replace(/^#+\s+/,""))}</h${n}>`}if(/^-{3,}$/.test(b))return"<hr>";return `<p>${inl(b).replace(/\n/g,"<br>")}</p>`}).join("\n")}
+function manuscriptHtml(){
+  const {md}=manuscriptMd();
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(S.title)}</title><style>body{font:18px/1.7 Georgia,"Iowan Old Style",serif;max-width:34em;margin:0 auto;padding:2.5em 1.2em;color:#1b1b1b}h1{font-size:2.1em;line-height:1.15;margin:2.4em 0 .5em;page-break-before:always}h1:first-of-type{page-break-before:avoid;margin-top:30vh;text-align:center}h1:first-of-type+p{text-align:center;font-size:1.2em}h2,h3{margin-top:1.8em}p{margin:0 0 1em;text-indent:1.4em}h1+p,h2+p,h3+p,hr+p{text-indent:0}hr{border:0;text-align:center;margin:2em 0}hr:after{content:"* * *"}.flag{background:#ffe9a8;padding:0 .2em;font:.8em/1 system-ui,sans-serif;border-radius:3px}.note{font:14px/1.4 system-ui,sans-serif;background:#f3f3f3;padding:.8em 1em;border-radius:8px;margin-bottom:2em}@media print{.note{display:none}}</style></head><body><div class="note">Open this file in a browser and choose Print, then Save as PDF. Highlighted [ASK] and [VERIFY] marks are open questions to resolve before this goes anywhere.</div>${mdToHtml(md)}</body></html>`;
+}
+function manuscriptSheet(){
+  const {n}=manuscriptMd(),total=S.chapters.length;
+  openSheet("Export manuscript",`<p>${n} of ${total} chapter${total===1?"":"s"} have drafts. Chapters without a draft are left out. Ghostwriter notes are removed.</p><div class="row"><button class="primary" data-act="msMd" ${n?"":"disabled"}>Markdown (.md)</button><button data-act="msHtml" ${n?"":"disabled"}>Printable page (.html)</button></div>`);
+}
+/* listen */
+async function listen(){
+  if(!TTS)return;
+  const txt=cleanDraft($("#cDraft").value).replace(/[#*_>`]/g,"").trim();if(!txt){toast("There's no draft to read.");return}
+  const lines=[];txt.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean).forEach(p=>{for(let i=0;i<p.length;i+=1800)lines.push({text:p.slice(i,i+1800)})});
+  try{await TTS.speak(lines)}catch(e){if(e&&e.code&&e.code!=="viewer_stopped"&&e.code!=="stopped")toast("Couldn't read aloud ("+e.code+").")}
+}
+/* goals */
+function streak(){const days=new Set(turnsAll().map(t=>new Date(t.ts).toDateString()));let n=0;const d=new Date();if(!days.has(d.toDateString()))d.setDate(d.getDate()-1);while(days.has(d.toDateString())){n++;d.setDate(d.getDate()-1)}return n}
+
+/* ---------- LIBRARY ---------- */
+function renderLib(){
+  const q=($("#libQ").value||"").toLowerCase();
+  const list=[...S.sessions].filter(s=>s.turns.length).sort((a,b)=>b.date.localeCompare(a.date)).filter(s=>!q||s.turns.some(t=>(t.text+" "+(t.q||"")).toLowerCase().includes(q)));
+  $("#libList").innerHTML=list.length?list.map(s=>{const w=s.turns.reduce((a,t)=>a+wc(t.text),0),first=s.turns[0],seas=[...new Set(s.turns.map(t=>t.seasonId).filter(Boolean))].map(seasonName).join(", "),gold=s.turns.filter(t=>t.gold).length,aud=s.turns.reduce((a,t)=>a+(t.n||0),0),noTx=s.turns.filter(t=>!t.text.trim()).length;
+    return `<button class="item" data-act="openSession" data-id="${s.id}"><div class="small mute">${fmtD(s.date)} · ${fmtT(s.date)}${s.id===S.curId?' · <b style="color:var(--amber)">in progress</b>':""}</div><h3>${esc(first.q||"Free talk")}</h3><div class="small mute">${s.turns.length} answers · ${w.toLocaleString()} words${aud?` · ${aud} audio`:""}${seas?" · "+esc(seas):""}</div><div style="margin-top:6px">${gold?`<span class="tag gold">${gold} gold</span>`:""}${noTx?`<span class="tag">${noTx} need transcript</span>`:""}${s.handed?'<span class="tag">handed off</span>':""}</div></button>`}).join(""):`<div class="empty">${q?"Nothing matches.":"No sessions yet. Your recorded answers will be filed here."}</div>`;
+}
+async function openSession(id){
+  const s=S.sessions.find(x=>x.id===id);if(!s)return;
+  const aud={},pho={};for(const t of s.turns){aud[t.id]=t.n?((await DB.getA(t.id).catch(()=>null))||[]):[];if(t.photo){const b=await DB.getA("photo:"+t.photo).catch(()=>null);if(b&&b[0]){const u=URL.createObjectURL(b[0]);sheetUrls.push(u);pho[t.id]=u}}}
+  const html=`<div class="small mute">${fmtD(s.date)} · ${fmtT(s.date)}</div>
+  <label>Session notes</label><textarea data-sn="${s.id}" style="min-height:70px" placeholder="Anything you want Claude to know about this session">${esc(s.notes)}</textarea>
+  <div class="row" style="margin:12px 0"><button class="sm" data-act="exportSession" data-id="${s.id}">Export (.md)</button><button class="sm local-only" data-act="exportAudio" data-id="${s.id}">Save audio</button><button class="sm ai" data-act="recap" data-id="${s.id}">Recap</button><button class="sm" data-act="addTurn" data-id="${s.id}">+ Paste text</button><button class="sm danger" data-act="delSession" data-id="${s.id}">Delete</button></div><div id="recapOut"></div>
+  ${s.turns.map((t,i)=>`<div class="card" data-turn="${t.id}"><div class="row between"><span class="eyebrow">${i+1} · ${esc(catName(t.cat))}</span><button class="sm ${t.gold?"primary":""}" data-act="gold" data-id="${s.id}" data-t="${t.id}" aria-pressed="${!!t.gold}">${t.gold?"★ Gold":"☆ Gold"}</button></div>
+    <p class="q" style="font-size:1.05rem">${esc(t.q||"Free talk")}</p>
+    ${pho[t.id]?`<img src="${pho[t.id]}" alt="Photo for this answer" style="max-height:180px;border-radius:12px;margin-bottom:6px">`:""}${t.look?`<div class="small mute" style="margin-bottom:6px">${esc(t.look)}</div>`:""}
+    ${(t.fu||[]).map(f=>`<div class="deep small">${esc(f)}</div>`).join("")}
+    ${(aud[t.id]||[]).map(b=>{const u=URL.createObjectURL(b);sheetUrls.push(u);return `<audio controls preload="none" src="${u}"></audio>`}).join("")}
+    <textarea class="serif" id="tt-${t.id}" data-tt="${t.id}" data-s="${s.id}" placeholder="No transcript yet. Type or dictate here.">${esc(t.text)}</textarea>
+    <div class="row between small mute" style="margin-top:6px"><span>${esc(seasonName(t.seasonId)||"No season")} · ${wc(t.text)} words${t.dur?" · "+mmss(t.dur):""}</span><span class="row" style="gap:4px"><button class="sm ai" data-act="cleanTurn" data-id="${s.id}" data-t="${t.id}">Clean up</button>${t.raw?`<button class="sm ghost" data-act="restoreTurn" data-id="${s.id}" data-t="${t.id}">Restore original</button>`:""}<button class="sm danger ghost" data-act="delTurn" data-id="${s.id}" data-t="${t.id}">Remove</button></span></div></div>`).join("")}`;
+  openSheet("Session",html);
+}
+async function cleanTurn(el){
+  const s=S.sessions.find(x=>x.id===el.dataset.id),t=s.turns.find(x=>x.id===el.dataset.t),ta=$("#tt-"+t.id);
+  if(wc(ta.value)<5){toast("There's not enough text to clean.");return}
+  el.disabled=true;el.textContent="Cleaning…";const c=newCtl();
+  try{
+    const {text}=await SAMPLE(`${SKILLS.cleaner.p}\n\n${bookCtx(t.seasonId)}\n\nTRANSCRIPT:\n${ta.value}`,{...MODEL,effort:"low",cache:false,signal:c.signal});
+    t.raw=t.raw||t.text;t.text=text.trim();s.handed=null;save();openSession(s.id);toast("Cleaned. You can restore the original.");
+  }catch(e){if(e.code!=="cancelled")toast(aiErr(e));el.disabled=false;el.textContent="Clean up"}
+}
+
+/* ---------- MOMENTS ---------- */
+function renderMom(){
+  const L=[...S.moments].sort((a,b)=>b.created.localeCompare(a.created));
+  $("#momList").innerHTML=L.length?L.map(m=>`<button class="item" data-act="editMoment" data-id="${m.id}"><h3>${esc(m.title||"Untitled moment")}</h3><div class="small mute">${esc(seasonName(m.seasonId)||"No season")} · ${esc(m.status||"seed")}${(m.dlg||[]).length?" · dialogue":""}</div><div style="margin-top:6px">${(m.lenses||[]).map(l=>`<span class="tag">${esc(lensName(l))}</span>`).join("")}</div></button>`).join(""):`<div class="empty">Nothing captured yet. When a strange or beautiful moment surfaces, jot it here before it fades.</div>`;
+  $("#lensGrid").innerHTML=LENSES.map(l=>`<button class="lens" data-act="openLens" data-id="${l.id}"><b>${esc(l.n)}</b><span class="small mute">${esc(l.l.split(". ")[0].replace(/\.$/,""))}.</span></button>`).join("");
+}
+function momentForm(id){
+  const m=S.moments.find(x=>x.id===id)||{title:"",seasonId:S.lastSeason||"",what:"",question:"",lenses:[],seed:"",status:"seed"};
+  const html=`<label>Title</label><input id="mTitle" value="${esc(m.title)}" placeholder="e.g. The whale at the anchorage">
+  <label>Season</label><select id="mSeason"><option value="">None</option>${S.seasons.map(s=>`<option value="${s.id}" ${m.seasonId===s.id?"selected":""}>${esc(seasonName(s.id))}</option>`).join("")}</select>
+  <label>Place</label><select id="mPlace"><option value="">None</option>${[...S.places].sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${p.id}" ${m.placeId===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select>
+  <label>What happened (a few lines is enough; you'll tell the whole of it on record)</label><textarea id="mWhat">${esc(m.what)}</textarea>
+  <label>The question it opens</label><textarea id="mQ" style="min-height:70px" placeholder="e.g. Who was watching whom?">${esc(m.question)}</textarea>
+  <label>Lenses</label><div class="chips" style="flex-wrap:wrap;overflow:visible" id="mLenses">${LENSES.map(l=>`<button type="button" class="chip ${(m.lenses||[]).includes(l.id)?"on":""}" data-act="toggleChip" data-id="${l.id}">${esc(l.n)}</button>`).join("")}</div>
+  <label>Parable seed: a story that isn't this story, but rhymes with it</label><textarea id="mSeed" style="min-height:90px">${esc(m.seed)}</textarea>
+  <label>Someone else's version (a crewmate, the captain). Optional.</label>
+  ${(m.others||[]).map((o,i)=>`<div class="card" style="padding:10px"><div class="eyebrow">${esc(o.who||"Someone")}</div><p class="small" style="margin:4px 0 6px">${esc(o.text)}</p><button type="button" class="sm ghost danger" data-act="rmOther" data-id="${m.id||""}" data-i="${i}">Remove</button></div>`).join("")}
+  <div class="grid2"><input id="oWho" placeholder="Who told it?"><button type="button" class="sm" data-act="addOther" data-id="${id||""}">Add their version</button></div>
+  <textarea id="oText" style="min-height:70px;margin-top:8px" placeholder="What they remember, in their words"></textarea>
+  <div class="row ai" style="margin-top:8px"><button class="sm" data-act="openDialogue" data-id="${id||""}">Socratic dialogue</button><button class="sm" data-act="writeParable" data-id="${id||""}">Write a parable</button><button class="sm ghost" data-act="stopAI">Stop</button></div>
+  <label>Status</label><select id="mStatus">${["seed","told on record","woven into a chapter"].map(x=>`<option ${m.status===x?"selected":""}>${x}</option>`).join("")}</select>
+  <div class="row" style="margin-top:16px"><button class="primary" data-act="saveMoment" data-id="${id||""}">Save</button><button data-act="tellMoment" data-id="${id||""}">Tell it on record</button>${id?`<button class="danger" data-act="delMoment" data-id="${id}">Delete</button>`:""}</div>`;
+  openSheet(id?"Moment":"Capture a moment",html);
+}
+function readMoment(id){
+  const m=S.moments.find(x=>x.id===id)||{id:uid(),created:new Date().toISOString(),handed:null,dlg:[]};
+  Object.assign(m,{title:$("#mTitle").value.trim(),seasonId:$("#mSeason").value,placeId:$("#mPlace").value,what:$("#mWhat").value.trim(),question:$("#mQ").value.trim(),seed:$("#mSeed").value.trim(),status:$("#mStatus").value,lenses:$$("#mLenses .chip.on").map(c=>c.dataset.id)});m.handed=null;
+  if(!m.title){toast("Give it a title.");return null}
+  if(!S.moments.includes(m)){S.moments.push(m);bindIds(m.id)}save();return m;
+}
+async function writeParable(el){
+  const m=readMoment(el.dataset.id);if(!m)return;el.dataset.id=m.id;
+  const ta=$("#mSeed"),prev=ta.value.trim(),c=newCtl();el.disabled=true;el.textContent="Writing…";
+  try{
+    const dlg=(m.dlg||[]).length?"\n\nSOCRATIC DIALOGUE SO FAR:\n"+m.dlg.map(x=>(x.r==="a"?"Interviewer: ":"Author: ")+x.t).join("\n"):"";
+    const {text}=await SAMPLE([RULES,SKILLS.parable.p,bookCtx(m.seasonId),momentBlock(m)+dlg].join("\n\n"),{...MODEL,effort:"high",cache:false,signal:c.signal,onText:({text})=>{ta.value=(prev?prev+"\n\n---\n\n":"")+text}});
+    m.seed=ta.value.trim();save();
+  }catch(e){if(e.code!=="cancelled")toast(aiErr(e));if(e.text){m.seed=ta.value.trim();save()}}
+  finally{el.disabled=false;el.textContent="Write a parable"}
+}
+function dlgTurns(m){
+  const t=[{role:"user",content:[RULES,SKILLS.socrates.p,bookCtx(m.seasonId),momentBlock(m)].join("\n\n")+"\n\nBegin with your first question."}];
+  (m.dlg||[]).forEach(x=>t.push({role:x.r==="a"?"assistant":"user",content:x.t}));
+  if(t[t.length-1].role==="assistant")t.push({role:"user",content:"(continue)"});
+  return t;
+}
+function renderDlg(m){
+  $("#dlgLog").innerHTML=(m.dlg||[]).map(x=>`<div class="bubble ${x.r}">${esc(x.t)}</div>`).join("")||'<p class="mute small">Claude will ask the first question.</p>';
+  const L=$("#sheetBody");L.scrollTop=L.scrollHeight;
+}
+async function openDialogue(el){
+  const m=readMoment(el.dataset.id);if(!m)return;
+  m.dlg=m.dlg||[];
+  openSheet("Socratic dialogue",`<h3 style="margin-top:4px">${esc(m.title)}</h3><p class="small mute">One question at a time. Answer in your own words; type or dictate. Say "distill" when you've gone far enough.</p><div id="dlgLog"></div><label for="dlgIn">Your answer</label><textarea id="dlgIn" class="serif" style="min-height:90px"></textarea>
+  <div class="row" style="margin-top:8px"><button class="primary" data-act="dlgSend" data-id="${m.id}">Send</button><button data-act="dictDlg" id="dlgMic" class="${IN_AI&&DICT?"":"local-only"}" ${IN_AI&&DICT?"":"hidden"}>Dictate</button><button data-act="dlgDistill" data-id="${m.id}">Distill</button><button class="ghost" data-act="stopAI">Stop</button></div><div id="dlgOut"></div>`);
+  renderDlg(m);
+  if(!m.dlg.length)dlgAsk(m);
+}
+async function dlgAsk(m){
+  const c=newCtl(),log=$("#dlgLog");log.insertAdjacentHTML("beforeend",'<div class="bubble a mute" id="dlgLive">Thinking…</div>');
+  try{
+    const {text}=await SAMPLE(dlgTurns(m),{...MODEL,effort:"medium",cache:false,signal:c.signal,onText:({text})=>{const b=$("#dlgLive");if(b)b.textContent=text}});
+    m.dlg.push({r:"a",t:text.trim()});save();
+  }catch(e){if(e.code!=="cancelled")toast(aiErr(e))}
+  const b=$("#dlgLive");if(b)b.remove();renderDlg(m);
+}
+async function dlgSend(el){
+  const m=S.moments.find(x=>x.id===el.dataset.id),inp=$("#dlgIn"),v=inp.value.trim();if(!v)return;
+  if(dict.on)DICT.stop().catch(()=>{});
+  m.dlg.push({r:"u",t:v});inp.value="";save();renderDlg(m);
+  if(/^distill\.?$/i.test(v)){m.dlg.pop();save();renderDlg(m);return dlgDistill(el)}
+  await dlgAsk(m);
+}
+async function dlgDistill(el){
+  const m=S.moments.find(x=>x.id===el.dataset.id);
+  if((m.dlg||[]).filter(x=>x.r==="u").length<2){toast("Answer a couple of questions first.");return}
+  const c=newCtl();$("#dlgOut").innerHTML='<p class="mute small">Distilling…</p>';
+  try{
+    const r=await SAMPLE.json([RULES,SKILLS.distill.p,momentBlock(m),"DIALOGUE:\n"+m.dlg.map(x=>(x.r==="a"?"Interviewer: ":"Author: ")+x.t).join("\n")].join("\n\n"),{...MODEL,effort:"medium",cache:false,signal:c.signal});
+    if(!m.question&&r.open_question)m.question=String(r.open_question);
+    if(r.parable_seed)m.seed=(m.seed?m.seed+"\n\n":"")+String(r.parable_seed);
+    m.lenses=[...new Set([...(m.lenses||[]),...((r.lenses||[]).filter(l=>LENSES.some(x=>x.id===l)))])];m.handed=null;save();
+    $("#dlgOut").innerHTML=`<div class="card"><div class="eyebrow">What you arrived at</div><p style="font-family:var(--serif)">${esc(r.insight||"")}</p><div class="eyebrow">Still open</div><p>${esc(r.open_question||"")}</p><div class="eyebrow">Parable seed (saved to the moment)</div><p>${esc(r.parable_seed||"")}</p></div>`;
+  }catch(e){if(e.code!=="cancelled")toast(aiErr(e));$("#dlgOut").innerHTML=""}
+}
+
+/* ---------- BOOK ---------- */
+function renderBook(){
+  $("#titleCard").innerHTML=`<label style="margin-top:0" for="bTitle">Title</label><input id="bTitle" value="${esc(S.title)}"><label for="bSub">Subtitle (the "or," title)</label><input id="bSub" value="${esc(S.subtitle)}">
+  <label>Alternate titles</label>${S.alts.map((a,i)=>`<div class="row between" style="margin:4px 0"><span style="font-family:var(--serif)">${esc(a)}</span><button class="sm ghost danger" data-act="delAlt" data-i="${i}">Remove</button></div>`).join("")||'<div class="small mute">None yet. Vonnegut had <i>Slaughterhouse-Five, or The Children\'s Crusade</i>.</div>'}
+  <div class="row" style="margin-top:8px"><input id="bAlt" placeholder="Add an alternate title" style="flex:1;min-width:0"><button class="sm" data-act="addAlt">Add</button></div>`;
+  $("#voiceCard").innerHTML=`<div class="eyebrow">Your voice</div><p class="small mute" style="margin:4px 0 8px">The style guide the ghostwriter follows. Build it from your transcripts, then edit it freely.</p><textarea id="bVoice" class="serif" style="min-height:140px" placeholder="Not built yet. Record a few sessions, then build it.">${esc(S.voice||"")}</textarea><div class="row" style="margin-top:8px"><button class="sm" data-act="buildVoice">${S.voice?"Rebuild from transcripts":"Build from transcripts"}</button><button class="sm ghost" data-act="stopAI">Stop</button></div>`;
+  const sw=id=>turnsAll().filter(t=>t.seasonId===id).reduce((a,t)=>a+wc(t.text),0);
+  $("#seasonList").innerHTML=S.seasons.length?[...S.seasons].sort((a,b)=>(a.year||0)-(b.year||0)).map(s=>`<button class="item" data-act="editSeason" data-id="${s.id}"><h3>${esc(s.year||"?")}${s.boat?" · "+esc(s.boat):""}</h3><div class="small">${s.captain?"Capt. "+esc(s.captain):'<span class="mute">Captain not named</span>'}${(s.crew||[]).length?` · crew: ${esc(s.crew.map(c=>c.name).join(", "))}`:""}</div>${(s.placeIds||[]).length?`<div class="small">${esc((s.placeIds||[]).map(placeName).filter(Boolean).join(" · "))}</div>`:""}<div class="small mute">${s.gotWhere||s.gotHow?"Got the job: "+esc(s.gotWhere||s.gotHow):"How you got the job: tap to add"}</div><div class="small mute">${[s.fishery,s.area,s.role].filter(Boolean).map(esc).join(" · ")}${[s.fishery,s.area,s.role].some(Boolean)?" · ":""}${sw(s.id).toLocaleString()} words</div></button>`).join(""):`<div class="empty">No seasons yet. Add the years you fished, one at a time.</div>`;
+  $("#chart").innerHTML=chartSvg();
+  $("#placeList").innerHTML=S.places.length?[...S.places].sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<button class="item" data-act="editPlace" data-id="${p.id}"><h3>${esc(p.name)}</h3><div class="small mute">${esc((KINDS.find(k=>k[0]===p.kind)||[0,"Place"])[1])} · ${placeWords(p.id).toLocaleString()} words${p.note?" · "+esc(p.note):""}</div></button>`).join(""):`<div class="empty small">No places yet. Tap + Place and pick from the Southeast Alaska list, or add your own.</div>`;
+  const cast=castList();
+  $("#castList").innerHTML=cast.length?cast.map(p=>`<div class="item" style="padding:10px 12px"><div class="row between"><div><h3 style="margin:0">${esc(p.name)}</h3><div class="small mute">${esc([...p.roles].join(", "))}${p.years.size?" · "+[...p.years].sort().join(", "):""}</div></div><select data-cast="${esc(p.key)}" style="width:auto;min-height:36px" aria-label="Name decision for ${esc(p.name)}">${[["","Name: undecided"],["real","Real name"],["changed","Changed name"],["composite","Composite"]].map(([v,l])=>`<option value="${v}" ${((S.cast[p.key]||{}).d||"")===v?"selected":""}>${l}</option>`).join("")}</select></div></div>`).join(""):`<div class="empty small">Captains and crew you add to seasons appear here, with a choice for how each will be named in the book.</div>`;
+  $("#chapList").innerHTML=S.chapters.length?S.chapters.map((c,i)=>`<div class="item" style="padding:10px 12px"><div class="row between"><button class="ghost" style="flex:1;text-align:left;border:0;padding:0;min-height:0" data-act="editChapter" data-id="${c.id}"><h3>${i+1}. ${esc(c.title||"Untitled")}</h3><div class="small mute">${esc(seasonName(c.seasonId)||"")}${c.summary?" · "+esc(c.summary):""}${c.draft?` · draft ${wc(c.draft).toLocaleString()} words`:""}</div></button><span class="row" style="gap:4px"><button class="sm" data-act="cycleStatus" data-id="${c.id}">${esc(c.status||"idea")}</button><button class="sm ghost" data-act="moveCh" data-id="${c.id}" data-d="-1" aria-label="Move up">↑</button><button class="sm ghost" data-act="moveCh" data-id="${c.id}" data-d="1" aria-label="Move down">↓</button></span></div></div>`).join(""):`<div class="empty">No chapters yet. Add them as they reveal themselves, or seed one per season.</div>`;
+}
+/* places */
+function chartSvg(){
+  const W=330,H=300,pts=S.places.filter(p=>isFinite(parseFloat(p.lat))&&isFinite(parseFloat(p.lng)));
+  let la0=59.8,la1=54.3,lo0=-141,lo1=-130;
+  if(pts.length){const las=pts.map(p=>parseFloat(p.lat)),los=pts.map(p=>parseFloat(p.lng));la1=Math.min(...las)-.4;la0=Math.max(...las)+.4;lo0=Math.min(...los)-.7;lo1=Math.max(...los)+.7;
+    if(la0-la1<1.6){const m=(la0+la1)/2;la0=m+.8;la1=m-.8}if(lo1-lo0<2.4){const m=(lo0+lo1)/2;lo0=m-1.2;lo1=m+1.2}}
+  const c=Math.cos((la0+la1)/2*Math.PI/180),k=Math.min(W/((lo1-lo0)*c),H/(la0-la1)),ox=(W-(lo1-lo0)*c*k)/2,oy=(H-(la0-la1)*k)/2;
+  const X=lo=>ox+(lo-lo0)*c*k,Y=la=>oy+(la0-la)*k,lstep=(la0-la1)>4?1:.5,gstep=(lo1-lo0)>6?2:1;
+  let g="";
+  for(let la=Math.ceil(la1/lstep)*lstep;la<=la0+1e-9;la+=lstep)g+=`<line x1="0" x2="${W}" y1="${Y(la).toFixed(1)}" y2="${Y(la).toFixed(1)}" stroke="var(--line)" stroke-width=".6"/><text x="3" y="${(Y(la)-2).toFixed(1)}" font-size="7" style="fill:var(--mute)">${+la.toFixed(1)}°N</text>`;
+  for(let lo=Math.ceil(lo0/gstep)*gstep;lo<=lo1+1e-9;lo+=gstep)g+=`<line y1="0" y2="${H}" x1="${X(lo).toFixed(1)}" x2="${X(lo).toFixed(1)}" stroke="var(--line)" stroke-width=".6"/><text x="${(X(lo)+2).toFixed(1)}" y="${H-3}" font-size="7" style="fill:var(--mute)">${-lo}°W</text>`;
+  pts.forEach(p=>{const x=X(parseFloat(p.lng)),y=Y(parseFloat(p.lat)),w=placeWords(p.id),r=4+Math.min(8,Math.sqrt(w)/5),right=x>W-80;
+    g+=`<g data-place="${p.id}" style="cursor:pointer"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${w?"var(--amber)":"none"}" fill-opacity=".75" stroke="var(--amber)" stroke-width="1.4"/><text x="${(x+(right?-r-3:r+3)).toFixed(1)}" y="${(y+3).toFixed(1)}" font-size="8.5" text-anchor="${right?"end":"start"}" style="fill:var(--ink)">${esc(p.name)}</text></g>`});
+  if(!pts.length)g+=`<text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="11" style="fill:var(--mute)">Add places to see them on your chart.</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Chart of your places in Southeast Alaska"><text x="${W-6}" y="12" text-anchor="end" font-size="9" style="fill:var(--mute)">N ↑</text>${g}</svg><div class="small mute" style="padding:4px 6px 0">Tap a place. Larger dots hold more of your words. Positions are approximate.</div>`;
+}
+function placeForm(id){
+  const p=S.places.find(x=>x.id===id)||{name:"",kind:"town",note:"",lat:"",lng:""};
+  const have=new Set(S.places.map(x=>x.name.toLowerCase()));
+  const quick=id?"":`<label style="margin-top:0">Southeast Alaska quick add (tap to add)</label><div class="chips" style="flex-wrap:wrap;overflow:visible">${GAZ.map((g,i)=>have.has(g[0].toLowerCase())?"":`<button type="button" class="chip" data-act="addGaz" data-i="${i}">${esc(g[0])}</button>`).join("")}</div><h2 style="font-size:1.05rem;margin-top:20px">Or add your own</h2>`;
+  openSheet(id?"Place":"Add places",quick+`<label for="pName">Name</label><input id="pName" list="gz" value="${esc(p.name)}" placeholder="e.g. the hole off Cape Fanshaw"><datalist id="gz">${GAZ.map(g=>`<option>${esc(g[0])}</option>`).join("")}</datalist>
+  <label for="pKind">Kind</label><select id="pKind">${KINDS.map(([v,l])=>`<option value="${v}" ${p.kind===v?"selected":""}>${l}</option>`).join("")}</select>
+  <label for="pNote">What is this place to you? One line.</label><textarea id="pNote" style="min-height:70px">${esc(p.note)}</textarea>
+  <div class="grid2"><div><label for="pLat">Latitude (optional)</label><input id="pLat" inputmode="decimal" value="${esc(p.lat)}" placeholder="e.g. 56.81"></div><div><label for="pLng">Longitude (optional)</label><input id="pLng" inputmode="decimal" value="${esc(p.lng)}" placeholder="e.g. -132.96"></div></div>
+  <p class="small mute">Listed places are positioned for you. For your own spots, add coordinates to show them on the chart.</p>
+  <div class="row" style="margin-top:16px"><button class="primary" data-act="savePlace" data-id="${id||""}">Save</button><button data-act="interviewPlace" data-id="${id||""}">Save &amp; interview me</button>${id?`<button class="danger" data-act="delPlace" data-id="${id}">Delete</button>`:""}</div>`);
+}
+function readPlace(id){
+  const name=$("#pName").value.trim();if(!name){toast("Give the place a name.");return null}
+  const p=S.places.find(x=>x.id===id)||{id:uid()};
+  Object.assign(p,{name,kind:$("#pKind").value,note:$("#pNote").value.trim(),lat:$("#pLat").value.trim(),lng:$("#pLng").value.trim()});
+  const g=GAZ.find(x=>x[0].toLowerCase()===name.toLowerCase());
+  if(g&&!p.lat&&!p.lng){p.lat=g[2];p.lng=g[3];if(!id)p.kind=g[1]}
+  if(!S.places.includes(p)){S.places.push(p);bindIds(p.id)}save();return p;
+}
+function placeQs(p){
+  const n=p.name,Q=[];
+  Q.push(`Take me to ${n}. What's the first thing you see, hear and smell when you arrive?`);
+  Q.push(`Who do you associate with ${n}? Tell me one scene that happened there.`);
+  if(p.kind==="water"||p.kind==="ground")Q.push(`What does ${n} do to a boat and to the crew? When is it kind, and when is it not?`);
+  else if(p.kind==="cape")Q.push(`What happens at ${n}? What do you watch for when you round it?`);
+  else Q.push(`What was ${n} like when the fleet was in? Where did you eat, mend gear and sleep, and who did you only ever see there?`);
+  Q.push(`What would someone who has never been to ${n} get wrong about it?`);
+  Q.push(`Tell me about a night at or near ${n}.`);
+  Q.push(`If ${n} were a person, who would it be?`);
+  return Q.map(q=>({c:"place",q,why:"Place: "+n}));
+}
+function crewRow(c={}){return `<div class="card crewrow" style="padding:10px"><div class="grid2"><input class="cn" placeholder="Name, as you'd say it" value="${esc(c.name)}"><input class="cr" placeholder="Job: deckhand, cook, skiff man…" value="${esc(c.role)}"></div><input class="cm" style="margin-top:8px" placeholder="One line: who were they?" value="${esc(c.note)}"><button type="button" class="sm ghost danger" data-act="rmCrew" style="margin-top:6px">Remove</button></div>`}
+function seasonForm(id){
+  const s=S.seasons.find(x=>x.id===id)||{year:new Date().getFullYear()-1,boat:"",gotWhere:"",gotHow:"",captain:"",captainNote:"",crew:[],fishery:"",area:"",role:"",deal:"",note:""};
+  openSheet(id?"Season":"New season",`<label>Year</label><input id="sYear" type="number" inputmode="numeric" value="${esc(s.year)}">
+  <label>Boat</label><input id="sBoat" value="${esc(s.boat)}">
+  <h2 style="font-size:1.05rem;margin-top:20px">How you got the job</h2>
+  <label>Where were you when you got it?</label><input id="sGotWhere" value="${esc(s.gotWhere)}" placeholder="the dock, a cannery bunkhouse, a bar, a phone call, home…">
+  <label>How did it happen? Who hired you or vouched for you?</label><textarea id="sGotHow" style="min-height:80px" placeholder="A few lines. You'll tell the full story on record.">${esc(s.gotHow)}</textarea>
+  <label>The deal (share, wage, handshake). Optional.</label><input id="sDeal" value="${esc(s.deal)}">
+  <h2 style="font-size:1.05rem;margin-top:20px">The captain</h2>
+  <label>Name, as you'd say it</label><input id="sCapt" value="${esc(s.captain)}">
+  <label>What were they like, in a line?</label><input id="sCaptNote" value="${esc(s.captainNote)}" placeholder="quiet, loud, fair, fearless, superstitious…">
+  <h2 style="font-size:1.05rem;margin-top:20px">The crew</h2>
+  <div id="sCrew">${(s.crew&&s.crew.length?s.crew:[{}]).map(crewRow).join("")}</div>
+  <button type="button" class="sm" data-act="addCrew">+ Crew member</button>
+  <h2 style="font-size:1.05rem;margin-top:20px">The season</h2>
+  <label>Your role</label><input id="sRole" value="${esc(s.role)}" placeholder="deckhand, skiff man, cook, skipper…">
+  <label>Fishery / gear</label><input id="sFish" list="fl" value="${esc(s.fishery)}" placeholder="purse seine, troll, gillnet, longline…"><datalist id="fl"><option>Purse seine</option><option>Troll</option><option>Gillnet</option><option>Longline</option><option>Pot</option><option>Tender</option></datalist>
+  <label>Area / port</label><input id="sArea" value="${esc(s.area)}">
+  <label>Places fished or stayed</label>${S.places.length?`<div class="chips" style="flex-wrap:wrap;overflow:visible" id="sPlaces">${S.places.map(p=>`<button type="button" class="chip ${(s.placeIds||[]).includes(p.id)?"on":""}" data-act="toggleChip" data-id="${p.id}">${esc(p.name)}</button>`).join("")}</div>`:`<div class="small mute" id="sPlaces">Add places on the Book tab first, then tag them here.</div>`}
+  <label>What was this season, in a line?</label><textarea id="sNote" style="min-height:70px">${esc(s.note)}</textarea>
+  <div class="row" style="margin-top:16px"><button class="primary" data-act="saveSeason" data-id="${id||""}">Save</button><button data-act="interviewSeason" data-id="${id||""}">Save &amp; interview me</button>${id?`<button class="danger" data-act="delSeason" data-id="${id}">Delete</button>`:""}</div>`);
+}
+function readSeason(id){
+  const s=S.seasons.find(x=>x.id===id)||{id:uid()};
+  Object.assign(s,{year:+$("#sYear").value||0,boat:$("#sBoat").value.trim(),gotWhere:$("#sGotWhere").value.trim(),gotHow:$("#sGotHow").value.trim(),deal:$("#sDeal").value.trim(),captain:$("#sCapt").value.trim(),captainNote:$("#sCaptNote").value.trim(),
+    crew:$$("#sCrew .crewrow").map(r=>({name:$(".cn",r).value.trim(),role:$(".cr",r).value.trim(),note:$(".cm",r).value.trim()})).filter(c=>c.name),
+    role:$("#sRole").value.trim(),fishery:$("#sFish").value.trim(),area:$("#sArea").value.trim(),note:$("#sNote").value.trim(),placeIds:$$("#sPlaces .chip.on").map(c=>c.dataset.id)});
+  if(!S.seasons.includes(s)){S.seasons.push(s);bindIds(s.id)}S.lastSeason=S.lastSeason||s.id;save();return s;
+}
+function seasonQs(s){
+  const b=s.boat||"the boat",cap=s.captain,Q=[];
+  Q.push({c:"origin",q:`${s.year||"That year"}: where were you when you got the job${s.boat?" on "+s.boat:""}, and how did it come about? Who said yes, and what did you say back?`,why:"Season: how you got the job"});
+  if(cap){
+    Q.push({c:"crew",q:`Tell me about the first time you met ${cap}. What did you notice before a word was said?`,why:`Season ${s.year}: the captain`});
+    Q.push({c:"crew",q:`What did ${cap} teach you, on purpose and by accident?`,why:`Season ${s.year}: the captain`});
+    Q.push({c:"crew",q:`Tell me about a moment when ${cap}'s call looked wrong and turned out right, or the other way around.`,why:`Season ${s.year}: the captain`});
+  }
+  (s.crew||[]).forEach(c=>Q.push({c:"crew",q:`Tell me about ${c.name}${c.role?", the "+c.role:""}. Give me one scene that shows who they were.`,why:`Season ${s.year}: the crew`}));
+  if((s.crew||[]).length>1)Q.push({c:"crew",q:`When did the crew of ${b} stop being a group of people and become a crew? Or did it never happen?`,why:`Season ${s.year}: the crew as one`});
+  (s.placeIds||[]).slice(0,3).map(placeName).filter(Boolean).forEach(n=>Q.push({c:"place",q:`In ${s.year||"that year"}, what happened in and around ${n}? Start with where you were standing the first time you saw it that season.`,why:`Season ${s.year}: places`}));
+  Q.push({c:"meaning",q:`If the ${s.year||""} season were a single image, what would it be?`,why:`Season ${s.year}`});
+  return Q;
+}
+function castList(){
+  const m={};const add=(name,role,s)=>{const k=name.toLowerCase();(m[k]=m[k]||{key:k,name,roles:new Set(),years:new Set()});m[k].roles.add(role);if(s.year)m[k].years.add(s.year)};
+  S.seasons.forEach(s=>{if(s.captain)add(s.captain,"captain",s);(s.crew||[]).forEach(c=>add(c.name,c.role||"crew",s))});
+  return Object.values(m).sort((a,b)=>a.name.localeCompare(b.name));
+}
+function chapterForm(id){
+  const c=S.chapters.find(x=>x.id===id)||{title:"",seasonId:"",summary:"",status:"idea",draft:""};
+  openSheet(id?"Chapter":"New chapter",`<label>Title</label><input id="cTitle" value="${esc(c.title)}"><label>Season</label><select id="cSeason"><option value="">None</option>${S.seasons.map(s=>`<option value="${s.id}" ${c.seasonId===s.id?"selected":""}>${esc(seasonName(s.id))}</option>`).join("")}</select>
+  <label>In a line</label><textarea id="cSum" style="min-height:70px">${esc(c.summary)}</textarea><label>Status</label><select id="cStat">${STATUS.map(x=>`<option ${c.status===x?"selected":""}>${x}</option>`).join("")}</select>
+  <div class="ai"><h2 style="font-size:1.05rem;margin-top:20px">Ghostwriter</h2>
+  <label for="cLen">Length</label><select id="cLen"><option value="800">Short (about 800 words)</option><option value="1500" selected>Standard (about 1,500 words)</option><option value="2500">Long (about 2,500 words)</option></select>
+  <div class="row" style="margin-top:8px"><button class="primary sm" data-act="draftChapter" data-id="${id||""}">Draft with Claude</button><button class="sm" data-act="gapChapter" data-id="${id||""}">What's missing?</button><button class="sm ghost" data-act="stopAI">Stop</button></div><div id="aiStat" class="small mute" style="margin-top:6px"></div><div id="gapOut"></div></div>
+  <label for="cDraft">Draft</label><textarea id="cDraft" class="serif" style="min-height:260px" placeholder="The chapter draft appears here. You can edit it, or ask Claude Code to write it.">${esc(c.draft||"")}</textarea>
+  <div class="row" style="margin-top:8px"><button class="sm" data-act="copyDraft">Copy draft</button><button class="sm tts" data-act="listen">Listen</button><button class="sm ghost tts" data-act="stopListen">Stop listening</button></div>
+  <div class="row" style="margin-top:16px"><button class="primary" data-act="saveChapter" data-id="${id||""}">Save</button>${id?`<button class="danger" data-act="delChapter" data-id="${id}">Delete</button>`:""}</div>`);
+}
+function readChapter(id){
+  const c=S.chapters.find(x=>x.id===id)||{id:uid()};
+  Object.assign(c,{title:$("#cTitle").value.trim(),seasonId:$("#cSeason").value,summary:$("#cSum").value.trim(),status:$("#cStat").value,draft:$("#cDraft").value});
+  if(!c.title){toast("Give it a title.");return null}
+  if(!S.chapters.includes(c)){S.chapters.push(c);bindIds(c.id)}save();return c;
+}
+async function draftChapter(el){
+  const c=readChapter(el.dataset.id);if(!c)return;el.dataset.id=c.id;
+  const ev=evidence(c.seasonId);if(!ev){toast("Record or paste some answers for this season first.");return}
+  const len=$("#cLen").value,ta=$("#cDraft"),st=$("#aiStat"),ctl2=newCtl();el.disabled=true;st.textContent="Thinking… a full chapter can take a minute or two.";
+  const moms=S.moments.filter(m=>!c.seasonId||m.seasonId===c.seasonId).map(momentBlock).join("\n\n");
+  const prompt=[RULES,SKILLS.chapter.p,`TARGET LENGTH: about ${len} words for the chapter itself.`,bookCtx(c.seasonId),`CHAPTER TITLE: ${c.title}\nIN A LINE: ${c.summary||"(none)"}`,moms?"MAGIC MOMENTS AND PARABLE SEEDS:\n"+moms:"","TRANSCRIPTS (gold-starred answers first):\n"+ev,c.draft.trim()?"PREVIOUS DRAFT (revise and improve; keep what works):\n"+c.draft:""].filter(Boolean).join("\n\n");
+  try{
+    const r=await SAMPLE(prompt,{...MODEL,effort:"high",cache:false,signal:ctl2.signal,onText:({text})=>{ta.value=text;st.textContent="Writing…"}});
+    c.draft=ta.value;c.draftAt=new Date().toISOString();if(c.status==="idea"||c.status==="captured")c.status="drafted";save();
+    st.textContent=`Draft saved${r.truncated?" (cut short; ask for a shorter length)":""}. ${wc(ta.value).toLocaleString()} words.`;
+  }catch(e){if(e.code!=="cancelled")st.textContent=aiErr(e);else st.textContent="Stopped.";if(e.text){c.draft=ta.value;save()}}
+  finally{el.disabled=false}
+}
+function queueQs(list){list.forEach(x=>{if(x.q&&!S.queue.some(y=>y.q===x.q))S.queue.push({c:CATS[x.cat]?x.cat:"ghost",q:String(x.q),why:String(x.why||x.ask||"")})});save()}
+async function gapChapter(el){
+  const c=readChapter(el.dataset.id);if(!c)return;el.dataset.id=c.id;
+  const ev=evidence(c.seasonId);if(!ev&&!c.draft.trim()){toast("There's nothing to review yet.");return}
+  const out=$("#gapOut"),ctl2=newCtl();out.innerHTML='<p class="small mute">Reading…</p>';
+  try{
+    const list=await SAMPLE.json([RULES,SKILLS.gaps.p,bookCtx(c.seasonId),`CHAPTER: ${c.title}\n${c.summary}`,c.draft.trim()?"CURRENT DRAFT:\n"+c.draft:"","TRANSCRIPTS:\n"+ev].filter(Boolean).join("\n\n"),{...MODEL,effort:"medium",cache:false,signal:ctl2.signal});
+    window._gaps=Array.isArray(list)?list:[];
+    out.innerHTML=window._gaps.length?`${window._gaps.map(g=>`<div class="issue"><div>${esc(g.q)}</div><div class="small mute">${esc(g.why||"")}</div></div>`).join("")}<button class="sm primary" data-act="queueGaps">Queue these as interview questions</button>`:'<p class="small mute">Nothing obviously missing.</p>';
+  }catch(e){out.innerHTML="";if(e.code!=="cancelled")toast(aiErr(e))}
+}
+async function buildVoice(el){
+  const ev=evidence("",40000);if(wc(ev)<400){toast("Record a few more answers first (about 400 words).");return}
+  el.disabled=true;el.textContent="Reading…";const c=newCtl(),ta=$("#bVoice");
+  try{
+    const {text}=await SAMPLE([SKILLS.voice.p,"TRANSCRIPTS:\n"+ev].join("\n\n"),{...MODEL,effort:"high",cache:false,signal:c.signal,onText:({text})=>{ta.value=text}});
+    S.voice=text.trim();save();
+  }catch(e){if(e.code!=="cancelled")toast(aiErr(e))}
+  finally{el.disabled=false;renderBook()}
+}
+async function continuity(){
+  if(S.seasons.length+S.sessions.length<2){toast("Add a few seasons and answers first.");return}
+  openSheet("Conflicts across the book",'<p class="mute small" id="cnWait">Claude is reading everything…</p><div id="cnOut"></div><div class="row"><button class="ghost" data-act="stopAI">Stop</button></div>');
+  const c=newCtl();
+  try{
+    const list=await SAMPLE.json([RULES,SKILLS.continuity.p,bookCtx(""),"TRANSCRIPTS:\n"+evidence("",100000)].join("\n\n"),{...MODEL,effort:"high",cache:false,signal:c.signal});
+    window._gaps=Array.isArray(list)?list:[];$("#cnWait").remove();
+    $("#cnOut").innerHTML=window._gaps.length?`${window._gaps.map(g=>`<div class="issue"><b>${esc(g.issue)}</b><div class="small mute">${esc(g.where||"")}</div><div>${esc(g.ask||"")}</div></div>`).join("")}<button class="primary" data-act="queueGaps">Queue these as interview questions</button>`:'<p>No conflicts found.</p>';
+  }catch(e){if(e.code!=="cancelled"){const w=$("#cnWait");if(w)w.textContent=aiErr(e)}}
+}
+
+/* ---------- export / import ---------- */
+function ext(m){return /mp4|m4a|aac/.test(m||"")?"m4a":/ogg/.test(m||"")?"ogg":"webm"}
+const audioName=(t,i)=>`${stamp(t.ts)}-p${i+1}.${ext(t.mime)}`;
+function sessionMd(s){
+  const L=[`## Session ${fmtD(s.date)} ${fmtT(s.date)}  (id ${s.id})`,""];if(s.notes)L.push(`_Session notes: ${s.notes}_`,"");
+  s.turns.forEach((t,i)=>{
+    L.push(`### ${i+1}. ${t.q?"Q: "+t.q:"Free talk"}`);
+    L.push(`*Theme: ${catName(t.cat)} · Season: ${seasonName(t.seasonId)||"unspecified"} · Place: ${placeName(t.placeId)||"unspecified"} · ${fmtT(t.ts)}${t.gold?" · ★ GOLD":""}${t.dur?" · "+mmss(t.dur):""}*`);
+    if(t.n)L.push(`*Audio: ${Array.from({length:t.n},(_,k)=>audioName(t,k)).join(", ")}*`);
+    if(t.fu&&t.fu.length)L.push("","*Socratic prompts offered:*",...t.fu.map(f=>"- "+f));
+    L.push("",t.text.trim()||"_[no transcript: audio only]_","")});
+  return L.join("\n");
+}
+function momentMd(m){return [`### ${m.title||"Untitled"}  [${(m.lenses||[]).map(lensName).join(", ")||"no lens"}]`,`*Season: ${seasonName(m.seasonId)||"unspecified"} · Place: ${placeName(m.placeId)||"unspecified"} · Status: ${m.status}*`,"",m.what&&`**What happened:** ${m.what}`,m.question&&`**The question it opens:** ${m.question}`,m.seed&&`**Parable seed:** ${m.seed}`,...(m.others||[]).map(o=>`**Another version (${o.who||"someone"}):** ${o.text}`),""].filter(x=>x!==""&&x!==undefined).join("\n")+"\n"}
+function buildHandoff(sessions,moments){
+  const L=[`# Handoff ${new Date().toISOString().slice(0,10)}`,"",`Book: ${S.title} (${S.subtitle})`,""];
+  L.push("## Seasons","");
+  if(!S.seasons.length)L.push("_none entered_","");
+  [...S.seasons].sort((a,b)=>a.year-b.year).forEach(s=>{
+    L.push(`### ${s.year} · ${s.boat||"boat not named"}`,`- Fishery/area: ${[s.fishery,s.area].filter(Boolean).join(", ")||"?"} · My role: ${s.role||"?"}`,`- Places: ${(s.placeIds||[]).map(placeName).filter(Boolean).join(", ")||"?"}`,
+      `- Got the job: ${[s.gotWhere,s.gotHow].filter(Boolean).join(" — ")||"?"}${s.deal?" · Deal: "+s.deal:""}`,
+      `- Captain: ${s.captain?s.captain+(s.captainNote?" ("+s.captainNote+")":""):"?"}`,
+      `- Crew: ${(s.crew||[]).length?s.crew.map(c=>c.name+(c.role?" ("+c.role+")":"")+(c.note?" — "+c.note:"")).join("; "):"?"}`,
+      ...(s.note?[`- In a line: ${s.note}`]:[]),"")});
+  const cast=castList();if(cast.length)L.push("## Cast and naming decisions","",...cast.map(p=>`- ${p.name} (${[...p.roles].join(", ")}; ${[...p.years].join(", ")}) — ${({real:"use real name",changed:"change the name",composite:"composite"})[(S.cast[p.key]||{}).d]||"name undecided"}`),"");
+  if(S.places.length)L.push("## Places","",...S.places.map(p=>`- ${p.name} (${p.kind})${p.note?" — "+p.note:""}`),"");
+  if(sessions.length)L.push("# Sessions","",...sessions.map(sessionMd));
+  if(moments.length)L.push("# Magic moments","",...moments.map(momentMd));
+  return L.join("\n");
+}
+async function saveFile(name,content,mime){
+  if(DL){try{await DL.save({filename:name,data:content});return true}catch(e){if(e.code!=="declined")toast("Couldn't save that file ("+(e.code||"error")+").");return false}}
+  const blob=content instanceof Blob?content:new Blob([content],{type:mime});const file=new File([blob],name,{type:blob.type||mime});
+  if(navigator.canShare&&matchMedia("(pointer:coarse)").matches&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return true}catch(e){if(e.name==="AbortError")return false}}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);return true;
+}
+async function exportHandoff(){
+  const ss=S.sessions.filter(s=>!s.handed&&s.turns.length),mm=S.moments.filter(m=>!m.handed);
+  if(!ss.length&&!mm.length){toast("Nothing new to hand off.");return}
+  const ok=await saveFile(`handoff-${new Date().toISOString().slice(0,10)}.md`,buildHandoff(ss,mm),"text/markdown");
+  if(ok){const now=new Date().toISOString();ss.forEach(s=>s.handed=now);mm.forEach(m=>m.handed=now);save();refresh();toast("Handoff saved.")}
+}
+async function exportAudio(sid){
+  const ss=sid?S.sessions.filter(s=>s.id===sid):S.sessions.filter(s=>!s.handed&&s.turns.length);
+  const files=[];for(const s of ss)for(const t of s.turns){if(!t.n)continue;const bl=(await DB.getA(t.id))||[];bl.forEach((b,i)=>files.push(new File([b],audioName(t,i),{type:b.type})))}
+  if(!files.length){toast("No audio to save.");return}
+  if(navigator.canShare&&matchMedia("(pointer:coarse)").matches&&navigator.canShare({files})){try{await navigator.share({files});return}catch(e){if(e.name==="AbortError")return}}
+  for(const f of files){await saveFile(f.name,f,f.type);await new Promise(r=>setTimeout(r,350))}
+}
+async function importFile(file){
+  let j;try{j=JSON.parse(await file.text())}catch(e){toast("That file isn't valid JSON.");return}
+  if(j.type==="backup"&&j.state){if(!(await ask("Replace everything in this app with the backup? Audio isn't part of backups.","Replace")))return;S=Object.assign(DEF(),j.state);S.sync={};save();toast("Backup restored.");closeSheet();go("home");return}
+  if(j.type==="ghostwriter-plan"){
+    let nq=0,nc=0,nm=0;
+    (j.questions||[]).forEach(q=>{if(q.q&&!S.customQs.some(x=>x.q===q.q)){S.customQs.push({cat:q.cat||"ghost",q:q.q,why:q.why||""});nq++}});
+    (j.chapters||[]).forEach(c=>{if(c.title&&!S.chapters.some(x=>x.title===c.title)){S.chapters.push({id:uid(),title:c.title,summary:c.summary||"",status:STATUS.includes(c.status)?c.status:"idea",seasonId:"",draft:""});nc++}});
+    (j.moments||[]).forEach(m=>{if(m.title&&!S.moments.some(x=>x.title===m.title)){S.moments.push({id:uid(),title:m.title,what:m.what||"",question:m.question||"",lenses:(m.lenses||[]).filter(l=>LENSES.some(x=>x.id===l)),seed:m.seed||"",seasonId:"",status:"seed",created:new Date().toISOString(),dlg:[]});nm++}});
+    save();closeSheet();toast(`Imported ${nq} questions, ${nc} chapters, ${nm} moments.`);return;
+  }
+  toast("Unrecognized file. Expected a ghostwriter plan or a backup.");
+}
+
+/* ---------- actions ---------- */
+const A={
+  goRec:()=>go("rec"),closeSheet,
+  photo:()=>$("#photoIn").click(),
+  newPlace:()=>placeForm(),editPlace:el=>placeForm(el.dataset.id),
+  savePlace:el=>{if(readPlace(el.dataset.id))closeSheet()},
+  delPlace:async el=>{if(!(await ask("Delete this place? Answers tagged with it stay, but lose the place label.","Delete")))return;S.places=S.places.filter(p=>p.id!==el.dataset.id);if(S.lastPlace===el.dataset.id)S.lastPlace="";save();closeSheet()},
+  addGaz:el=>{const g=GAZ[+el.dataset.i];if(S.places.some(p=>p.name.toLowerCase()===g[0].toLowerCase()))return;S.places.push({id:uid(),name:g[0],kind:g[1],note:"",lat:g[2],lng:g[3]});save();el.remove();toast(g[0]+" added.")},
+  interviewPlace:async el=>{const p=readPlace(el.dataset.id);if(!p)return;S.queue=placeQs(p);S.lastPlace=p.id;save();closeSheet();if(!draftDirty()){D.q=null;D.cat="place";D.text=""}else toast("Place questions are queued after your current answer.");go("rec")},
+  mine:()=>openSheet("Your own question",`<label for="myQ" style="margin-top:0">Ask yourself anything</label><textarea id="myQ" style="min-height:90px"></textarea><div class="row" style="margin-top:12px"><button class="primary" data-act="useMine">Ask me this</button></div>`),
+  useMine:()=>{const q=$("#myQ").value.trim();if(!q)return;closeSheet();askQuestion({q,c:"mine"})},
+  askQotd:()=>{const qs=allQs(),qd=qs[Math.floor(Date.now()/864e5)%qs.length];askQuestion(qd)},
+  recap,askBook,abSend,
+  manuscript:manuscriptSheet,
+  msMd:async()=>{await saveFile(`manuscript-${new Date().toISOString().slice(0,10)}.md`,manuscriptMd().md,"text/markdown")},
+  msHtml:async()=>{await saveFile(`manuscript-${new Date().toISOString().slice(0,10)}.html`,manuscriptHtml(),"text/html")},
+  listen,stopListen:()=>{if(TTS)TTS.stop()},
+  addOther:el=>{const who=$("#oWho").value.trim(),text=$("#oText").value.trim();if(!text){toast("Write what they remember first.");return}const m=readMoment(el.dataset.id);if(!m)return;m.others=m.others||[];m.others.push({who,text});save();momentForm(m.id)},
+  rmOther:el=>{const m=readMoment(el.dataset.id);if(!m)return;(m.others||[]).splice(+el.dataset.i,1);save();momentForm(m.id)},
+  stopAI:()=>{if(ctl)ctl.abort()},
+  askCat:el=>{catFilter=el.dataset.c;ringSel=null;if(!draftDirty()){D.q=null;D.cat=catFilter;D.text=""}go("rec")},
+  filter:el=>{catFilter=el.dataset.c;if(!draftDirty()){setQ(pickQ(catFilter))}else renderRecMeta()},
+  newQ:()=>askQuestion(pickQ(catFilter)),
+  deeper:()=>{if(SAMPLE){aiFollow();return}const used=new Set(D.fu);const pool=DEEPER.filter(x=>!used.has(x));D.fu.push((pool.length?pool:DEEPER)[Math.floor(Math.random()*(pool.length||DEEPER.length))]);persistDraft();renderRecMeta()},
+  free:()=>askQuestion({q:null,c:"free"}),
+  lensPick:()=>openSheet("Choose a lens",LENSES.map(l=>`<button class="item" data-act="openLens" data-id="${l.id}"><h3>${esc(l.n)}</h3><div class="small mute">${esc(l.l)}</div></button>`).join("")),
+  openLens:el=>{const l=LENSES.find(x=>x.id===el.dataset.id);openSheet(l.n,`<p style="font-family:var(--serif);font-size:1.1rem">${esc(l.l)}</p>${l.q.map((q,i)=>`<div class="card"><p class="q" style="font-size:1.05rem">${esc(q)}</p><button class="sm primary" data-act="askLens" data-id="${l.id}" data-i="${i}">Ask me this</button></div>`).join("")}`)},
+  askLens:el=>{const l=LENSES.find(x=>x.id===el.dataset.id);const q=l.q[+el.dataset.i];closeSheet();askQuestion({q,c:"lens",why:l.n})},
+  mic:()=>micToggle(),
+  saveTurn,discard,
+  finish:async()=>{if(rec.on)micToggle();if(draftDirty()&&!(await ask("You have an unsaved answer. Finish without saving it?","Finish")))return;const id=S.curId;S.curId=null;save();go("lib");if(id)openSession(id)},
+  openSession:el=>openSession(el.dataset.id),
+  gold:el=>{const t=S.sessions.find(s=>s.id===el.dataset.id).turns.find(x=>x.id===el.dataset.t);t.gold=!t.gold;save();el.classList.toggle("primary",t.gold);el.textContent=t.gold?"★ Gold":"☆ Gold"},
+  cleanTurn,
+  restoreTurn:el=>{const s=S.sessions.find(x=>x.id===el.dataset.id),t=s.turns.find(x=>x.id===el.dataset.t);t.text=t.raw;delete t.raw;s.handed=null;save();openSession(s.id)},
+  delTurn:async el=>{if(!(await ask("Remove this answer and its audio?","Remove")))return;const s=S.sessions.find(x=>x.id===el.dataset.id);s.turns=s.turns.filter(t=>t.id!==el.dataset.t);await DB.delA(el.dataset.t).catch(()=>{});if(!s.turns.length)S.sessions=S.sessions.filter(x=>x!==s);if(S.curId===s.id&&!s.turns.length)S.curId=null;save();s.turns.length?openSession(s.id):closeSheet()},
+  delSession:async el=>{if(!(await ask("Delete this whole session, including audio? This can't be undone.","Delete")))return;const s=S.sessions.find(x=>x.id===el.dataset.id);for(const t of s.turns)await DB.delA(t.id).catch(()=>{});S.sessions=S.sessions.filter(x=>x!==s);if(S.curId===s.id)S.curId=null;save();closeSheet()},
+  addTurn:el=>{const s=S.sessions.find(x=>x.id===el.dataset.id);s.turns.push({id:uid(),q:null,cat:"free",fu:[],text:"",dur:0,ts:new Date().toISOString(),n:0,mime:"",seasonId:S.lastSeason||"",gold:false});save();openSession(s.id).then(()=>{const t=$$("#sheetBody textarea[data-tt]").pop();t&&t.focus()})},
+  exportSession:async el=>{const s=S.sessions.find(x=>x.id===el.dataset.id);await saveFile(`session-${stamp(s.date)}.md`,buildHandoff([s],[]),"text/markdown")},
+  exportHandoff,exportAudio:el=>exportAudio(el.dataset.id),
+  newMoment:()=>momentForm(),editMoment:el=>momentForm(el.dataset.id),
+  toggleChip:el=>el.classList.toggle("on"),
+  saveMoment:el=>{if(readMoment(el.dataset.id))closeSheet()},
+  tellMoment:el=>{const m=readMoment(el.dataset.id);if(!m)return;closeSheet();askQuestion({q:`Tell me the whole of "${m.title}". Start at the moment before it happened.${m.question?" Then: "+m.question:""}`,c:"moment"})},
+  delMoment:async el=>{if(!(await ask("Delete this moment?","Delete")))return;S.moments=S.moments.filter(m=>m.id!==el.dataset.id);save();closeSheet()},
+  writeParable,openDialogue,dlgSend,dlgDistill,
+  dictDlg:el=>{if(!DICT)return;if(dict.on){DICT.stop().catch(()=>{});return}el.textContent="Listening…";startDict($("#dlgIn"),false)},
+  newSeason:()=>seasonForm(),editSeason:el=>seasonForm(el.dataset.id),
+  saveSeason:el=>{readSeason(el.dataset.id);closeSheet()},
+  addCrew:()=>{$("#sCrew").insertAdjacentHTML("beforeend",crewRow());const r=$$("#sCrew .cn").pop();r&&r.focus()},
+  rmCrew:el=>el.closest(".crewrow").remove(),
+  interviewSeason:el=>{const s=readSeason(el.dataset.id);S.queue=seasonQs(s);S.lastSeason=s.id;save();closeSheet();if(!draftDirty()){D.q=null;D.cat="origin";D.text=""}else toast("Season questions are queued after your current answer.");go("rec")},
+  delSeason:async el=>{if(!(await ask("Delete this season? Answers filed under it stay, but lose the season label.","Delete")))return;S.seasons=S.seasons.filter(s=>s.id!==el.dataset.id);if(S.lastSeason===el.dataset.id)S.lastSeason="";save();closeSheet()},
+  newChapter:()=>chapterForm(),editChapter:el=>chapterForm(el.dataset.id),
+  saveChapter:el=>{if(readChapter(el.dataset.id))closeSheet()},
+  draftChapter,gapChapter,
+  queueGaps:()=>{queueQs(window._gaps||[]);toast("Queued. They'll come up in Record.");},
+  copyDraft:async()=>{const ta=$("#cDraft");try{await navigator.clipboard.writeText(ta.value);toast("Copied.")}catch(e){ta.select();toast("Selected. Copy it with your keyboard.")}},
+  delChapter:async el=>{if(!(await ask("Delete this chapter and its draft?","Delete")))return;S.chapters=S.chapters.filter(c=>c.id!==el.dataset.id);save();closeSheet()},
+  cycleStatus:el=>{const c=S.chapters.find(x=>x.id===el.dataset.id);c.status=STATUS[(STATUS.indexOf(c.status)+1)%STATUS.length];save();renderBook()},
+  moveCh:el=>{const i=S.chapters.findIndex(c=>c.id===el.dataset.id),j=i+ +el.dataset.d;if(j<0||j>=S.chapters.length)return;[S.chapters[i],S.chapters[j]]=[S.chapters[j],S.chapters[i]];save();renderBook()},
+  seedChapters:()=>{let n=0;[...S.seasons].sort((a,b)=>a.year-b.year).forEach(s=>{if(!S.chapters.some(c=>c.seasonId===s.id)){S.chapters.push({id:uid(),title:`The Season of ${s.year}`,seasonId:s.id,summary:s.note||"",status:"idea",draft:""});n++}});save();renderBook();toast(n?`Added ${n} chapter${n>1?"s":""}.`:"Every season already has a chapter.")},
+  addAlt:()=>{const v=$("#bAlt").value.trim();if(!v)return;S.alts.push(v);save();renderBook()},
+  delAlt:el=>{S.alts.splice(+el.dataset.i,1);save();renderBook()},
+  buildVoice,continuity,
+  settings:()=>{const st=S.settings;openSheet("Settings & backup",`<label for="stGoal" style="margin-top:0">Book goal (words)</label><input id="stGoal" type="number" inputmode="numeric" value="${st.goal||60000}"><label for="stMin">Session length goal (minutes)</label><input id="stMin" type="number" inputmode="numeric" value="${st.sessionMin||30}">
+    <div class="ai"><label for="stAuto">Follow-up questions</label><select id="stAuto"><option value="1" ${st.auto?"selected":""}>Offer one when I stop talking</option><option value="0" ${!st.auto?"selected":""}>Only when I ask</option></select></div>
+    <div class="local-only"><label for="stLive">Live transcription</label><select id="stLive"><option value="1" ${st.live?"selected":""}>On (needs signal)</option><option value="0" ${!st.live?"selected":""}>Off (record audio only)</option></select>
+    <label for="stLang">Speech language</label><select id="stLang">${[["en-US","English (US)"],["en-GB","English (UK)"],["en-AU","English (Australia)"],["en-CA","English (Canada)"]].map(([v,l])=>`<option value="${v}" ${st.lang===v?"selected":""}>${l}</option>`).join("")}</select></div>
+    <h2>Backup &amp; import</h2><p class="small mute">${DBX?"Your book is also stored in this page's database. Backups hold text only.":"Everything you record lives in this browser, on this device. Back up often. Backups hold text only; use \"Save audio\" for recordings."}</p>
+    <div class="row"><button data-act="backup">Download backup</button><button data-act="pickImport">Import file…</button></div>
+    <p class="small mute" style="margin-top:12px">Import accepts a <b>ghostwriter plan</b> (<code>next-questions.json</code> from your workspace) or a backup.</p>
+    <p class="small mute">${esc(capsLine())}</p><input type="file" id="impFile" accept=".json,application/json" hidden>`)},
+  backup:async()=>{const ok=await saveFile(`endless-seasons-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({type:"backup",v:1,state:S},null,1),"application/json");if(ok){S.lastBackup=new Date().toISOString();save()}},
+  pickImport:()=>$("#impFile").click()
+};
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab]");if(t){go(t.dataset.tab);return}
+  const pl=e.target.closest("[data-place]");if(pl){placeForm(pl.dataset.place);return}
+  const r=e.target.closest("[data-ring]");if(r){ringSel=ringSel===r.dataset.ring?null:r.dataset.ring;renderHome();return}
+  if(e.target.id==="back"){closeSheet();return}
+  const a=e.target.closest("[data-act]");if(a&&A[a.dataset.act]){e.preventDefault();A[a.dataset.act](a)}
+});
+document.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.id==="rSeason"){S.lastSeason=el.value;save()}
+  else if(el.id==="rPlace"){S.lastPlace=el.value;save()}
+  else if(el.dataset.tt){const s=S.sessions.find(x=>x.id===el.dataset.s),t=s.turns.find(x=>x.id===el.dataset.tt);t.text=el.value;if(s.handed&&t.text)s.handed=null;save()}
+  else if(el.dataset.sn){S.sessions.find(x=>x.id===el.dataset.sn).notes=el.value;save()}
+  else if(el.dataset.cast!==undefined){S.cast[el.dataset.cast]={d:el.value};save()}
+  else if(el.id==="bTitle"){S.title=el.value||"Untitled";save()}
+  else if(el.id==="bSub"){S.subtitle=el.value;save()}
+  else if(el.id==="bVoice"){S.voice=el.value;save()}
+  else if(el.id==="stLive"){S.settings.live=el.value==="1";save()}
+  else if(el.id==="stLang"){S.settings.lang=el.value;save()}
+  else if(el.id==="stAuto"){S.settings.auto=el.value==="1";save()}
+  else if(el.id==="stGoal"){S.settings.goal=Math.max(1000,+el.value||60000);save()}
+  else if(el.id==="stMin"){S.settings.sessionMin=Math.max(5,+el.value||30);save()}
+  else if(el.id==="photoIn"&&el.files[0]){handlePhoto(el.files[0]);el.value=""}
+  else if(el.id==="impFile"&&el.files[0]){importFile(el.files[0]);el.value=""}
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="ta"&&!rec.on){D.text=e.target.value;clearTimeout(save._d);save._d=setTimeout(persistDraft,600)}
+  if(e.target.id==="libQ")renderLib();
+});
+
+/* ---------- boot ---------- */
+async function initCaps(){
+  if(!IN_AI)return;
+  const get=async n=>{try{return await window.claude.use(n)}catch(e){return null}};
+  [SAMPLE,DBX,DICT,DL,TTS]=await Promise.all([get("sample"),get("db"),get("dictation"),get("downloads"),get("tts")]);
+  document.body.classList.toggle("has-ai",!!SAMPLE);document.body.classList.toggle("has-tts",!!TTS);
+  if(DICT)initDictation();
+  if(DBX){pullT=Date.now();await syncPull()}
+  refresh();
+}
+(async function(){
+  await DB.open();
+  try{const st=await DB.get("state");if(st)S=Object.assign(DEF(),st,{settings:Object.assign(DEF().settings,st.settings||{}),sync:st.sync||{}})}catch(e){}
+  if(!DB.ok&&!IN_AI)setTimeout(()=>toast("Private mode: nothing will be kept after you close this tab."),600);
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+  if(S.draft){D=Object.assign(D,S.draft,{blobs:[]});try{D.blobs=(await DB.getA("draft"))||[]}catch(e){}}
+  go("home");
+  initCaps();
+})();
+</script>
+
+<script>if("serviceWorker" in navigator&&typeof window.claude==="undefined"&&(location.protocol==="https:"||location.hostname==="localhost"))addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})</script>
+</body>
+</html>
